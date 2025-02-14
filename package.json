@@ -1,7 +1,7 @@
 {
   "name": "aqie-monitoringstation-backend",
   "version": "0.0.0",
-  "description": "CDP Backend Template",
+  "description": "aqie-monitoringstation-backend",
   "main": ".server/index.js",
   "type": "module",
   "engines": {
@@ -42,6 +42,7 @@
     "aws4": "^1.13.2",
     "babel-plugin-module-resolver": "^5.0.2",
     "convict": "^6.2.4",
+    "geolib": "^3.3.4",
     "global-agent": "^3.0.0",
     "hapi-pino": "^12.1.0",
     "hapi-pulse": "^3.0.1",
@@ -49,6 +50,7 @@
     "lodash": "^4.17.21",
     "mongo-locks": "^3.0.2",
     "mongodb": "^6.10.0",
+    "mt-osgridref": "^0.1.0",
     "node-fetch": "^3.3.2",
     "pino": "^9.5.0",
     "pino-pretty": "^13.0.0",
