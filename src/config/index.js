@@ -24,7 +24,7 @@ const config = convict({
   port: {
     doc: 'The port to bind.',
     format: 'port',
-    default: 3001,
+    default: 3002,
     env: 'PORT'
   },
   serviceName: {
@@ -96,7 +96,26 @@ const config = convict({
     format: String,
     nullable: true,
     default: null,
-    env: 'HTTP_PROXY'
+    env: 'CDP_HTTP_PROXY'
+  },
+  httpsProxy: {
+    doc: 'HTTPS Proxy',
+    format: String,
+    nullable: true,
+    default: null,
+    env: 'CDP_HTTPS_PROXY'
+  },
+  OSPlaceApiUrl: {
+    doc: 'OSPlace API url',
+    format: String,
+    default: `https://aiqe-dataservice-backend.dev.cdp-int.defra.cloud/osnameplaces/userLocation=`,
+    env: 'OSPlace_API_URL'
+  },
+  measurementsApiUrl: {
+    doc: 'Ricardo API url',
+    format: String,
+    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
+    env: 'MEASUREMENTS_API_URL'
   },
   isSecureContextEnabled: {
     doc: 'Enable Secure Context',
@@ -117,6 +136,12 @@ const config = convict({
       default: 'x-cdp-request-id',
       env: 'TRACING_HEADER'
     }
+  },
+  allowOriginUrl: {
+    doc: 'URL to Access-Control-Allow-Origin',
+    format: String,
+    default: '',
+    env: 'ACCESS_CONTROL_ALLOW_ORIGIN_URL'
   }
 })
 
