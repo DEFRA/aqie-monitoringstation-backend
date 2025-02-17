@@ -108,7 +108,7 @@ const config = convict({
   OSPlaceApiUrl: {
     doc: 'OSPlace API url',
     format: String,
-    default: `https://aiqe-dataservice-backend.dev.cdp-int.defra.cloud/osnameplaces/userLocation=`,
+    default: `https://aqie-location-backend.dev.cdp-int.defra.cloud/osnameplaces/userLocation=`,
     env: 'OSPlace_API_URL'
   },
   measurementsApiUrl: {
