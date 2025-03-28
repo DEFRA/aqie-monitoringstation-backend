@@ -68,6 +68,12 @@ function getNearestLocation(
         pollutantname === 'GR10'
       ) {
         pollutantname = 'PM10'
+      } else if (pollutantname === 'NO2') {
+        pollutantname = 'Nitrogen dioxide'
+      } else if (pollutantname === 'O3') {
+        pollutantname = 'Ozone'
+      } else if (pollutantname === 'SO2') {
+        pollutantname = 'Sulphur dioxide'
       }
 
       // const polValue = curr.pollutants[pollutant].value
@@ -128,7 +134,13 @@ function getNearestLocation(
       // const pollutantarray = pollkeys.filter((item, index) => pollkeys.indexOf(item) === index)
       // const newpollutants = []
       const pollutantname = []
-      const order = ['PM2.5', 'PM10', 'NO2', 'O3', 'SO2']
+      const order = [
+        'PM2.5',
+        'PM10',
+        'Nitrogen dioxide',
+        'Ozone',
+        'Sulphur dioxide'
+      ]
 
       // const finalpollutant =
       Object.keys(curr.pollutants).forEach((pollutant) => {
