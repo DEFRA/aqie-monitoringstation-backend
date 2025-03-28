@@ -33,7 +33,7 @@ async function fetchmonitoringstation(request) {
       // let results  = getOSPlaces
       const selectedMatches = getOSPlaces
 
-      const { nearestLocationsRange, latlon } = getNearestLocation(
+      const { finalnearestLocationsRange, latlon } = getNearestLocation(
         selectedMatches,
         getMeasurements?.measurements,
         locationType,
@@ -42,9 +42,9 @@ async function fetchmonitoringstation(request) {
         // 'en'
       )
       if (latlon !== null) {
-        return nearestLocationsRange
+        return finalnearestLocationsRange
       }
-      return nearestLocationsRange
+      return finalnearestLocationsRange
     }
   }
   return 'no data found'
