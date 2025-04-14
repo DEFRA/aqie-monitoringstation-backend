@@ -104,24 +104,26 @@ function getNearestLocation(
       })
       // }
     })
-    if (Object.keys(newpollutants).length !== 0) {
-      acc.push({
-        region: curr.area,
-        siteType: areaType, // curr.areaType,
-        localSiteID: curr.localSiteID,
-        location: {
-          type: curr.location.type,
-          coordinates: [
-            curr.location.coordinates[0],
-            curr.location.coordinates[1]
-          ]
-        },
-        id: curr.name.replaceAll(' ', ''),
-        name: curr.name,
-        updated: curr.updated,
-        distance: getDistance.toFixed(1),
-        pollutants: { ...newpollutants }
-      })
+    if (curr.localSiteID !== undefined) {
+      if (Object.keys(newpollutants).length !== 0) {
+        acc.push({
+          region: curr.area,
+          siteType: areaType, // curr.areaType,
+          localSiteID: curr.localSiteID,
+          location: {
+            type: curr.location.type,
+            coordinates: [
+              curr.location.coordinates[0],
+              curr.location.coordinates[1]
+            ]
+          },
+          id: curr.name.replaceAll(' ', ''),
+          name: curr.name,
+          updated: curr.updated,
+          distance: getDistance.toFixed(1),
+          pollutants: { ...newpollutants }
+        })
+      }
     }
     acc.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
     return acc
