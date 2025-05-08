@@ -60,49 +60,57 @@ function getNearestLocation(
 
     Object.keys(curr.pollutants).forEach((pollutant) => {
       let pollutantname = pollutant
-      if (pollutantname === 'PM25' || pollutantname === 'GR25') {
-        pollutantname = 'PM2.5'
-      } else if (
-        pollutantname === 'MP10' ||
-        pollutantname === 'GE10' ||
-        pollutantname === 'GR10'
+      if (
+        curr.pollutants[pollutant].featureOfInterest !== 'missingFOI' &&
+        (curr.pollutants[pollutant].endDate > '2017-12-31' ||
+          curr.pollutants[pollutant].endDate === 'null')
       ) {
-        pollutantname = 'PM10'
-      } else if (pollutantname === 'NO2') {
-        pollutantname = 'Nitrogen dioxide'
-      } else if (pollutantname === 'O3') {
-        pollutantname = 'Ozone'
-      } else if (pollutantname === 'SO2') {
-        pollutantname = 'Sulphur dioxide'
-      }
-
-      // const polValue = curr.pollutants[pollutant].value
-      // if (polValue !== null && polValue !== -99 && polValue !== '0') {
-      //   const formatHour = moment(
-      //     curr.pollutants[pollutant].time.date
-      //   ).format('ha')
-      //   const dayNumber = moment(curr.pollutants[pollutant].time.date).format(
-      //     'D'
-      //   )
-      //   const yearNumber = moment(
-      //     curr.pollutants[pollutant].time.date
-      //   ).format('YYYY')
-      //   const monthNumber = moment(
-      //     curr.pollutants[pollutant].time.date
-      //   ).format('MMMM')
-      Object.assign(newpollutants, {
-        [pollutant]: {
-          pollutantname
-          //   time: {
-          //     date: curr.pollutants[pollutant].time.date,
-          //     hour: formatHour,
-          //     day: dayNumber,
-          //     month: monthNumber,
-          //     year: yearNumber
-          //   }
+        if (pollutantname === 'PM25' || pollutantname === 'GR25') {
+          pollutantname = 'PM2.5'
+        } else if (
+          pollutantname === 'MP10' ||
+          pollutantname === 'GE10' ||
+          pollutantname === 'GR10'
+        ) {
+          pollutantname = 'PM10'
+        } else if (pollutantname === 'NO2') {
+          pollutantname = 'Nitrogen dioxide'
+        } else if (pollutantname === 'O3') {
+          pollutantname = 'Ozone'
+        } else if (pollutantname === 'SO2') {
+          pollutantname = 'Sulphur dioxide'
         }
-      })
-      // }
+        // }
+
+        // const startDate = curr.pollutants[pollutant].startDate
+        // const endDate = curr.pollutants[pollutant].endDate
+        // const polValue = curr.pollutants[pollutant].value
+        // if (polValue !== null && polValue !== -99 && polValue !== '0') {
+        //   const formatHour = moment(
+        //     curr.pollutants[pollutant].time.date
+        //   ).format('ha')
+        //   const dayNumber = moment(curr.pollutants[pollutant].time.date).format(
+        //     'D'
+        //   )
+        //   const yearNumber = moment(
+        //     curr.pollutants[pollutant].time.date
+        //   ).format('YYYY')
+        //   const monthNumber = moment(
+        //     curr.pollutants[pollutant].time.date
+        //   ).format('MMMM')
+        Object.assign(newpollutants, {
+          [pollutant]: {
+            pollutantname
+            //   time: {
+            //     date: curr.pollutants[pollutant].time.date,
+            //     hour: formatHour,
+            //     day: dayNumber,
+            //     month: monthNumber,
+            //     year: yearNumber
+            //   }
+          }
+        })
+      }
     })
     if (curr.localSiteID !== undefined) {
       if (Object.keys(newpollutants).length !== 0) {
