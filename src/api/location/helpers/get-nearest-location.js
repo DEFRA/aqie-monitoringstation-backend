@@ -194,7 +194,6 @@ function getNearestLocation(
     },
     []
   )
-
   return { finalnearestLocationsRange, latlon }
 }
 
