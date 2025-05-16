@@ -156,7 +156,6 @@ function getNearestLocation(
         'Ozone',
         'Sulphur dioxide'
       ]
-
       // const finalpollutant =
       Object.keys(curr.pollutants).forEach((pollutant) => {
         // let pollutantname = curr.pollutants[pollutant].pollutantname
