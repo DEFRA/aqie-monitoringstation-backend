@@ -61,9 +61,14 @@ function getNearestLocation(
     Object.keys(curr.pollutants).forEach((pollutant) => {
       let pollutantname = pollutant
       if (
-        curr.pollutants[pollutant].featureOfInterest !== 'missingFOI' &&
-        (curr.pollutants[pollutant].endDate > '2017-12-31' ||
-          curr.pollutants[pollutant].endDate === 'null')
+        // curr.pollutants[pollutant].featureOfInterest !== 'missingFOI' &&
+        (curr.pollutants[pollutant].value > '0' &&
+          (curr.pollutants[pollutant].endDate > '2017-12-31' ||
+            curr.pollutants[pollutant].endDate === null)) ||
+        (curr.pollutants[pollutant].value === null &&
+          curr.pollutants[pollutant].startDate !== null &&
+          (curr.pollutants[pollutant].endDate > '2017-12-31' ||
+            curr.pollutants[pollutant].endDate === null))
       ) {
         if (pollutantname === 'PM25' || pollutantname === 'GR25') {
           pollutantname = 'PM2.5'
