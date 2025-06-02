@@ -7,6 +7,10 @@ import {
   pointsInRange
 } from '~/src/api/location/helpers/location-util.js'
 // import moment from 'moment-timezone'
+import {
+  geolibgetDistance,
+  distanceMeasurements
+} from '~/src/api/location/helpers/constants.js'
 
 function getNearestLocation(
   matches,
@@ -28,7 +32,10 @@ function getNearestLocation(
     { latitude: latlon.lat, longitude: latlon.lon },
     measurementsCoordinates
   )
-  const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(0, 40)
+  const nearestMeasurementsPoints = orderByDistanceMeasurements.slice(
+    0,
+    distanceMeasurements
+  )
   const pointsToDisplay = nearestMeasurementsPoints.filter((p) =>
     pointsInRange(latlon, p, miles)
   )
@@ -42,10 +49,10 @@ function getNearestLocation(
     return opt
   })
 
-  // TODO select and filter locations and pollutants which are not null or don't have exceptions
+  // select and filter locations and pollutants which are not null or don't have exceptions
   const nearestLocationsRange = nearestLocationsRangeCal.reduce((acc, curr) => {
     const newpollutants = []
-    let areaType
+    // let areaType
     const getDistance =
       geolib.getDistance(
         { latitude: latlon.lat, longitude: latlon.lon },
@@ -53,38 +60,62 @@ function getNearestLocation(
           latitude: curr.location.coordinates[0],
           longitude: curr.location.coordinates[1]
         }
-      ) * 0.000621371192
+      ) * geolibgetDistance
 
-    areaType = curr.areaType.split(' ')
-    areaType = areaType[1] + ' ' + areaType[0]
+    // areaType = curr.areaType.split(' ')
+    // areaType = areaType[1] + ' ' + areaType[0]
+
+    const [first, second] = curr.areaType.split(' ')
+    const areaType = `${second} ${first}`
 
     Object.keys(curr.pollutants).forEach((pollutant) => {
       let pollutantname = pollutant
+      const pollutantData = curr.pollutants[pollutant]
+      const { value, startDate, endDate } = pollutantData
+
+      const isValuePositive = value > 0
+      const isEndDateValid = endDate === null || endDate > '2017-12-31'
+      const isValueMissingWithStart = value === null && startDate !== null
       if (
-        // curr.pollutants[pollutant].featureOfInterest !== 'missingFOI' &&
-        (curr.pollutants[pollutant].value > '0' &&
-          (curr.pollutants[pollutant].endDate > '2017-12-31' ||
-            curr.pollutants[pollutant].endDate === null)) ||
-        (curr.pollutants[pollutant].value === null &&
-          curr.pollutants[pollutant].startDate !== null &&
-          (curr.pollutants[pollutant].endDate > '2017-12-31' ||
-            curr.pollutants[pollutant].endDate === null))
+        (isValuePositive && isEndDateValid) ||
+        (isValueMissingWithStart && isEndDateValid)
       ) {
-        if (pollutantname === 'PM25' || pollutantname === 'GR25') {
-          pollutantname = 'PM2.5'
-        } else if (
-          pollutantname === 'MP10' ||
-          pollutantname === 'GE10' ||
-          pollutantname === 'GR10'
-        ) {
-          pollutantname = 'PM10'
-        } else if (pollutantname === 'NO2') {
-          pollutantname = 'Nitrogen dioxide'
-        } else if (pollutantname === 'O3') {
-          pollutantname = 'Ozone'
-        } else if (pollutantname === 'SO2') {
-          pollutantname = 'Sulphur dioxide'
+        const pollutantAliases = {
+          PM25: 'PM2.5',
+          GR25: 'PM2.5',
+          MP10: 'PM10',
+          GE10: 'PM10',
+          GR10: 'PM10',
+          NO2: 'Nitrogen dioxide',
+          O3: 'Ozone',
+          SO2: 'Sulphur dioxide'
         }
+        pollutantname = pollutantAliases[pollutantname] || pollutantname
+        // if (
+        //   // curr.pollutants[pollutant].featureOfInterest !== 'missingFOI' &&
+        //   (curr.pollutants[pollutant].value > '0' &&
+        //     (curr.pollutants[pollutant].endDate > '2017-12-31' ||
+        //       curr.pollutants[pollutant].endDate === null)) ||
+        //   (curr.pollutants[pollutant].value === null &&
+        //     curr.pollutants[pollutant].startDate !== null &&
+        //     (curr.pollutants[pollutant].endDate > '2017-12-31' ||
+        //       curr.pollutants[pollutant].endDate === null))
+        // ) {
+        // if (pollutantname === 'PM25' || pollutantname === 'GR25') {
+        //   pollutantname = 'PM2.5'
+        // } else if (
+        //   pollutantname === 'MP10' ||
+        //   pollutantname === 'GE10' ||
+        //   pollutantname === 'GR10'
+        // ) {
+        //   pollutantname = 'PM10'
+        // } else if (pollutantname === 'NO2') {
+        //   pollutantname = 'Nitrogen dioxide'
+        // } else if (pollutantname === 'O3') {
+        //   pollutantname = 'Ozone'
+        // } else if (pollutantname === 'SO2') {
+        //   pollutantname = 'Sulphur dioxide'
+        // }
         // }
 
         // const startDate = curr.pollutants[pollutant].startDate
