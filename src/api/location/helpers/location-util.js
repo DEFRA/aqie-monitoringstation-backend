@@ -86,12 +86,6 @@ function getNearLocation(lat, lon, measurementsCoordinates) {
     logger.error('getLocation is undefined or missing properties')
     return []
   }
-  // const nearestLocation = forecasts?.filter((item) => {
-  //   return (
-  //     item.location.coordinates[0] === getLocation.latitude &&
-  //     item.location.coordinates[1] === getLocation.longitude
-  //   )
-  // })
   return getLocation
 }
 export {
