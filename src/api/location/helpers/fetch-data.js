@@ -7,6 +7,7 @@ async function fetchData(locationType, userLocation) {
   // let optionsOAuth
   // let savedAccessToken
   // let accessToken
+  
 
   const options = {
     method: 'get',
