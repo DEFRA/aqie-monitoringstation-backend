@@ -42,7 +42,7 @@ async function fetchmonitoringstation(request) {
         0
         // 'en'
       )
-      if (latlon !== null) {
+      if (latlon != null) {
         return finalnearestLocationsRange
       }
       return finalnearestLocationsRange
