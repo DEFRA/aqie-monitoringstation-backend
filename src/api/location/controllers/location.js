@@ -1,8 +1,6 @@
 import { fetchmonitoringstation } from '~/src/api/location/helpers/get-osplace-util.js'
 import { config } from '~/src/config/index.js'
-import {
-  statusCodes
-} from '~/src/api/common/constants/status-codes.js'
+import { statusCodes } from '~/src/api/common/constants/status-codes.js'
 
 const osplaceController = {
   handler: async (request, h) => {

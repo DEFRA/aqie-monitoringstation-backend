@@ -2,7 +2,7 @@ import { fetchData } from '~/src/api/location/helpers/fetch-data.js'
 import { config } from '~/src/config/index.js'
 import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
 import { catchFetchError } from '~/src/api/common/helpers/catch-fetch-error.js'
-import { logConfig  } from '~/src/api/common/helpers/logging/logger-options.js'
+// import { logConfig } from '~/src/api/common/helpers/logging/logger-options.js'
 
 jest.mock('~/src/config/index.js')
 jest.mock('~/src/api/common/helpers/logging/logger.js')
@@ -13,7 +13,6 @@ jest.mock('~/src/api/common/helpers/logging/logger-options.js', () => ({
     redact: ['password', 'token']
   }
 }))
-
 
 describe('fetchData', () => {
   const mockLogger = {
@@ -45,7 +44,9 @@ describe('fetchData', () => {
     })
 
     expect(mockLogger.info).toHaveBeenCalledWith('getOSPlaces data fetched:')
-    expect(mockLogger.info).toHaveBeenCalledWith('getMeasurements data fetched:')
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'getMeasurements data fetched:'
+    )
   })
 
   it('should log error if OSPlace fetch fails', async () => {
@@ -64,7 +65,9 @@ describe('fetchData', () => {
     expect(mockLogger.error).toHaveBeenCalledWith(
       'Error fetching statusCodeOSPlace data: OSPlace error'
     )
-    expect(mockLogger.info).toHaveBeenCalledWith('getMeasurements data fetched:')
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'getMeasurements data fetched:'
+    )
     expect(result.getOSPlaces).toBeNull()
   })
 

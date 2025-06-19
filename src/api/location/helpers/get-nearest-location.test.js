@@ -1,8 +1,11 @@
-jest.setTimeout(50000) // 30 seconds
+// 30 seconds
 import { getNearestLocation } from '~/src/api/location/helpers/get-nearest-location.js'
 import * as geolib from 'geolib'
 import * as locationUtil from '~/src/api/location/helpers/location-util.js'
-import { geolibgetDistance, distanceMeasurements } from '~/src/api/location/helpers/constants.js'
+// import {
+//   geolibgetDistance,
+//   distanceMeasurements
+// } from '~/src/api/location/helpers/constants.js'
 
 jest.mock('geolib')
 jest.mock('~/src/api/location/helpers/location-util.js')
@@ -17,11 +20,11 @@ describe('getNearestLocation', () => {
   })
 
   it('should return empty result when matches is empty', () => {
-    geolib.orderByDistance.mockReturnValue([]) 
+    geolib.orderByDistance.mockReturnValue([])
     const result = getNearestLocation([], [], {}, 10, 0)
     expect(result).toEqual({ finalnearestLocationsRange: [], latlon: {} })
   })
-    
+
   it('should return nearest locations with valid pollutants', () => {
     const matches = [{ dummy: 'match' }]
     const location = { dummy: 'location' }
@@ -48,15 +51,28 @@ describe('getNearestLocation', () => {
     ]
 
     locationUtil.convertPointToLonLat.mockReturnValue(latlon)
-    locationUtil.coordinatesTotal.mockReturnValue([{ latitude: 51.51, longitude: -0.11 }])
-    geolib.orderByDistance.mockReturnValue([{ latitude: 51.51, longitude: -0.11 }])
+    locationUtil.coordinatesTotal.mockReturnValue([
+      { latitude: 51.51, longitude: -0.11 }
+    ])
+    geolib.orderByDistance.mockReturnValue([
+      { latitude: 51.51, longitude: -0.11 }
+    ])
     locationUtil.pointsInRange.mockReturnValue(true)
     geolib.getDistance.mockReturnValue(1000)
 
-    const result = getNearestLocation(matches, measurements, location, 10, index)
+    const result = getNearestLocation(
+      matches,
+      measurements,
+      location,
+      10,
+      index
+    )
 
-    expect(result.finalnearestLocationsRange.length).toBe(1)
-    expect(result.finalnearestLocationsRange[0].pollutants).toEqual(['PM2.5', 'Nitrogen dioxide'])
+    expect(result.finalnearestLocationsRange).toHaveLength(1)
+    expect(result.finalnearestLocationsRange[0].pollutants).toEqual([
+      'PM2.5',
+      'Nitrogen dioxide'
+    ])
     expect(result.latlon).toEqual(latlon)
   })
 
@@ -84,14 +100,24 @@ describe('getNearestLocation', () => {
     ]
 
     locationUtil.convertPointToLonLat.mockReturnValue(latlon)
-    locationUtil.coordinatesTotal.mockReturnValue([{ latitude: 51.52, longitude: -0.12 }])
-    geolib.orderByDistance.mockReturnValue([{ latitude: 51.52, longitude: -0.12 }])
+    locationUtil.coordinatesTotal.mockReturnValue([
+      { latitude: 51.52, longitude: -0.12 }
+    ])
+    geolib.orderByDistance.mockReturnValue([
+      { latitude: 51.52, longitude: -0.12 }
+    ])
     locationUtil.pointsInRange.mockReturnValue(true)
     geolib.getDistance.mockReturnValue(2000)
 
-    const result = getNearestLocation(matches, measurements, location, 10, index)
+    const result = getNearestLocation(
+      matches,
+      measurements,
+      location,
+      10,
+      index
+    )
 
-    expect(result.finalnearestLocationsRange.length).toBe(0)
+    expect(result.finalnearestLocationsRange).toHaveLength(0)
   })
 
   it('should skip entries without localSiteID', () => {
@@ -117,14 +143,24 @@ describe('getNearestLocation', () => {
     ]
 
     locationUtil.convertPointToLonLat.mockReturnValue(latlon)
-    locationUtil.coordinatesTotal.mockReturnValue([{ latitude: 51.53, longitude: -0.13 }])
-    geolib.orderByDistance.mockReturnValue([{ latitude: 51.53, longitude: -0.13 }])
+    locationUtil.coordinatesTotal.mockReturnValue([
+      { latitude: 51.53, longitude: -0.13 }
+    ])
+    geolib.orderByDistance.mockReturnValue([
+      { latitude: 51.53, longitude: -0.13 }
+    ])
     locationUtil.pointsInRange.mockReturnValue(true)
     geolib.getDistance.mockReturnValue(1500)
 
-    const result = getNearestLocation(matches, measurements, location, 10, index)
+    const result = getNearestLocation(
+      matches,
+      measurements,
+      location,
+      10,
+      index
+    )
 
-    expect(result.finalnearestLocationsRange.length).toBe(0)
+    expect(result.finalnearestLocationsRange).toHaveLength(0)
   })
 
   it('should sort pollutants in correct order', () => {
@@ -152,13 +188,26 @@ describe('getNearestLocation', () => {
     ]
 
     locationUtil.convertPointToLonLat.mockReturnValue(latlon)
-    locationUtil.coordinatesTotal.mockReturnValue([{ latitude: 51.54, longitude: -0.14 }])
-    geolib.orderByDistance.mockReturnValue([{ latitude: 51.54, longitude: -0.14 }])
+    locationUtil.coordinatesTotal.mockReturnValue([
+      { latitude: 51.54, longitude: -0.14 }
+    ])
+    geolib.orderByDistance.mockReturnValue([
+      { latitude: 51.54, longitude: -0.14 }
+    ])
     locationUtil.pointsInRange.mockReturnValue(true)
     geolib.getDistance.mockReturnValue(1200)
 
-    const result = getNearestLocation(matches, measurements, location, 10, index)
+    const result = getNearestLocation(
+      matches,
+      measurements,
+      location,
+      10,
+      index
+    )
 
-    expect(result.finalnearestLocationsRange[0].pollutants).toEqual(['PM2.5', 'Ozone'])
+    expect(result.finalnearestLocationsRange[0].pollutants).toEqual([
+      'PM2.5',
+      'Ozone'
+    ])
   })
 })

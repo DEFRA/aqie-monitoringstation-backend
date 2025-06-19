@@ -1,6 +1,14 @@
 /* eslint-disable prettier/prettier */
 import * as geolib from 'geolib'
-import OsGridRef from 'mt-osgridref'
+// import OsGridRef from 'mt-osgridref'
+  
+
+  import {
+    convertPointToLonLat,
+    coordinatesTotal,
+    pointsInRange,
+    getNearLocation
+  } from '~/src/api/location/helpers/location-util.js'
 
 jest.mock('geolib')
 jest.mock('mt-osgridref', () => {
@@ -19,14 +27,10 @@ jest.mock('mt-osgridref', () => {
     })
   }))
   
-
-  import {
-    convertPointToLonLat,
-    coordinatesTotal,
-    pointsInRange,
-    getNearLocation
-  } from '~/src/api/location/helpers/location-util.js'
-  
+  const mockLogger = {
+    info: jest.fn(),
+    error: jest.fn()
+  }
 
 describe('location-util', () => {
   beforeEach(() => {

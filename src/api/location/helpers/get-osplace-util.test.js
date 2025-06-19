@@ -1,4 +1,3 @@
-
 import { fetchmonitoringstation } from '~/src/api/location/helpers/get-osplace-util.js'
 import { fetchData } from '~/src/api/location/helpers/fetch-data.js'
 import { getNearestLocation } from '~/src/api/location/helpers/get-nearest-location.js'
@@ -23,8 +22,7 @@ describe('fetchmonitoringstation', () => {
     expect(result).toBe('no data found')
   })
 
- 
-it("should return 'no data found' when userLocation is \"''\"", async () => {
+  it("should return 'no data found' when userLocation is \"''\"", async () => {
     const request = { params: { userLocation: "''" } }
     const result = await fetchmonitoringstation(request)
     expect(result).toBe('no data found')
