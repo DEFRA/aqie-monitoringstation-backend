@@ -1,36 +1,34 @@
 /* eslint-disable prettier/prettier */
 import * as geolib from 'geolib'
 // import OsGridRef from 'mt-osgridref'
-  
 
-  import {
-    convertPointToLonLat,
-    coordinatesTotal,
-    pointsInRange,
-    getNearLocation
-  } from '~/src/api/location/helpers/location-util.js'
+import {
+  convertPointToLonLat,
+  coordinatesTotal,
+  pointsInRange,
+  getNearLocation
+} from '~/src/api/location/helpers/location-util.js'
 
 jest.mock('geolib')
 jest.mock('mt-osgridref', () => {
-    return {
-      __esModule: true,
-      default: jest.fn().mockImplementation(() => ({})),
-      osGridToLatLong: jest.fn().mockReturnValue({ _lat: 51.5, _lon: -0.1 })
-    }
-  })
-  
-
-  jest.mock('~/src/api/common/helpers/logging/logger.js', () => ({
-    createLogger: () => ({
-      error: jest.fn(),
-      info: jest.fn()
-    })
-  }))
-  
-  const mockLogger = {
-    info: jest.fn(),
-    error: jest.fn()
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => ({})),
+    osGridToLatLong: jest.fn().mockReturnValue({ _lat: 51.5, _lon: -0.1 })
   }
+})
+
+jest.mock('~/src/api/common/helpers/logging/logger.js', () => ({
+  createLogger: () => ({
+    error: jest.fn(),
+    info: jest.fn()
+  })
+}))
+
+const mockLogger = {
+  info: jest.fn(),
+  error: jest.fn()
+}
 
 describe('location-util', () => {
   beforeEach(() => {
@@ -99,13 +97,21 @@ describe('location-util', () => {
   describe('pointsInRange', () => {
     it('should return true if point is within radius', () => {
       geolib.isPointWithinRadius.mockReturnValue(true)
-      const result = pointsInRange({ lat: 51.5, lon: -0.1 }, { latitude: 51.5, longitude: -0.1 }, 1000)
+      const result = pointsInRange(
+        { lat: 51.5, lon: -0.1 },
+        { latitude: 51.5, longitude: -0.1 },
+        1000
+      )
       expect(result).toBe(true)
     })
 
     it('should return false if point is outside radius', () => {
       geolib.isPointWithinRadius.mockReturnValue(false)
-      const result = pointsInRange({ lat: 51.5, lon: -0.1 }, { latitude: 52.5, longitude: -0.2 }, 1000)
+      const result = pointsInRange(
+        { lat: 51.5, lon: -0.1 },
+        { latitude: 52.5, longitude: -0.2 },
+        1000
+      )
       expect(result).toBe(false)
     })
   })
@@ -113,20 +119,28 @@ describe('location-util', () => {
   describe('getNearLocation', () => {
     it('should return nearest location if valid', () => {
       geolib.findNearest.mockReturnValue({ latitude: 51.5, longitude: -0.1 })
-      const result = getNearLocation(51.5, -0.1, [{ latitude: 51.5, longitude: -0.1 }])
+      const result = getNearLocation(51.5, -0.1, [
+        { latitude: 51.5, longitude: -0.1 }
+      ])
       expect(result).toEqual({ latitude: 51.5, longitude: -0.1 })
     })
 
     it('should log error and return empty array if geolib throws', () => {
-      geolib.findNearest.mockImplementation(() => { throw new Error('fail') })
-      const result = getNearLocation(51.5, -0.1, [{ latitude: 51.5, longitude: -0.1 }])
+      geolib.findNearest.mockImplementation(() => {
+        throw new Error('fail')
+      })
+      const result = getNearLocation(51.5, -0.1, [
+        { latitude: 51.5, longitude: -0.1 }
+      ])
       expect(mockLogger.error).toHaveBeenCalled()
       expect(result).toEqual([])
     })
 
     it('should return empty array if result is missing lat/lon', () => {
       geolib.findNearest.mockReturnValue({})
-      const result = getNearLocation(51.5, -0.1, [{ latitude: 51.5, longitude: -0.1 }])
+      const result = getNearLocation(51.5, -0.1, [
+        { latitude: 51.5, longitude: -0.1 }
+      ])
       expect(mockLogger.error).toHaveBeenCalled()
       expect(result).toEqual([])
     })
