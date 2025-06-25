@@ -59,36 +59,6 @@ describe('location-util', () => {
       expect(result).toHaveProperty('lat')
       expect(result).toHaveProperty('lon')
     })
-
-    it.skip('should convert non-UK location using x/y coordinates', () => {
-      const matches = [
-        {
-          xCoordinate: 123,
-          yCoordinate: 456
-        }
-      ]
-      const result = convertPointToLonLat(matches, 'non-uk', 0)
-      expect(result).toHaveProperty('lat')
-      expect(result).toHaveProperty('lon')
-    })
-
-    it.skip('should log error if non-UK location throws', async () => {
-      const { default: OsGridRef } = await import('mt-osgridref')
-      OsGridRef.mockImplementation(() => {
-        throw new Error('mock failure')
-      })
-
-      const matches = [
-        {
-          xCoordinate: 123,
-          yCoordinate: 456
-        }
-      ]
-      const result = convertPointToLonLat(matches, 'non-uk', 0)
-      expect(global.mockLogger.error).toHaveBeenCalled()
-      expect(result).toHaveProperty('lat')
-      expect(result).toHaveProperty('lon')
-    })
   })
 
   describe('coordinatesTotal', () => {
