@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 import * as geolib from 'geolib'
-// import OsGridRef from 'mt-osgridref'
 
 import {
   convertPointToLonLat,
@@ -9,26 +8,35 @@ import {
   getNearLocation
 } from '~/src/api/location/helpers/location-util.js'
 
-jest.mock('geolib')
 jest.mock('mt-osgridref', () => {
+  const osGridToLatLong = jest.fn().mockReturnValue({ _lat: 51.5, _lon: -0.1 })
+
+  function OsGridRef(x, y) {
+    this.x = x
+    this.y = y
+  }
+
+  OsGridRef.osGridToLatLong = osGridToLatLong
+
   return {
     __esModule: true,
-    default: jest.fn().mockImplementation(() => ({})),
-    osGridToLatLong: jest.fn().mockReturnValue({ _lat: 51.5, _lon: -0.1 })
+    default: OsGridRef
   }
 })
 
-jest.mock('~/src/api/common/helpers/logging/logger.js', () => ({
-  createLogger: () => ({
-    error: jest.fn(),
-    info: jest.fn()
-  })
-}))
+jest.mock('~/src/api/common/helpers/logging/logger.js', () => {
+  const error = jest.fn()
+  const info = jest.fn()
+  global.mockLogger = { error, info }
+  return {
+    createLogger: () => ({
+      error,
+      info
+    })
+  }
+})
 
-const mockLogger = {
-  info: jest.fn(),
-  error: jest.fn()
-}
+jest.mock('geolib')
 
 describe('location-util', () => {
   beforeEach(() => {
@@ -36,7 +44,7 @@ describe('location-util', () => {
   })
 
   describe('convertPointToLonLat', () => {
-    it.skip('should convert UK location using getOSPlaces', () => {
+    it('should convert UK location using getOSPlaces', () => {
       const matches = {
         getOSPlaces: [
           {
@@ -64,10 +72,20 @@ describe('location-util', () => {
       expect(result).toHaveProperty('lon')
     })
 
-    it.skip('should log error if non-UK location throws', () => {
-      const matches = [{}]
+    it.skip('should log error if non-UK location throws', async () => {
+      const { default: OsGridRef } = await import('mt-osgridref')
+      OsGridRef.mockImplementation(() => {
+        throw new Error('mock failure')
+      })
+
+      const matches = [
+        {
+          xCoordinate: 123,
+          yCoordinate: 456
+        }
+      ]
       const result = convertPointToLonLat(matches, 'non-uk', 0)
-      expect(mockLogger.error).toHaveBeenCalled()
+      expect(global.mockLogger.error).toHaveBeenCalled()
       expect(result).toHaveProperty('lat')
       expect(result).toHaveProperty('lon')
     })
@@ -86,10 +104,10 @@ describe('location-util', () => {
       ])
     })
 
-    it.skip('should log error and return empty array on exception', () => {
+    it('should log error and return empty array on exception', () => {
       const matches = null
       const result = coordinatesTotal(matches)
-      expect(mockLogger.error).toHaveBeenCalled()
+      expect(global.mockLogger.error).toHaveBeenCalled()
       expect(result).toEqual([])
     })
   })
@@ -125,23 +143,23 @@ describe('location-util', () => {
       expect(result).toEqual({ latitude: 51.5, longitude: -0.1 })
     })
 
-    it.skip('should log error and return empty array if geolib throws', () => {
+    it('should return empty array if result is missing lat/lon', () => {
+      geolib.findNearest.mockReturnValue({})
+      const result = getNearLocation(51.5, -0.1, [
+        { latitude: 51.5, longitude: -0.1 }
+      ])
+      expect(global.mockLogger.error).toHaveBeenCalled()
+      expect(result).toEqual([])
+    })
+
+    it('should log error and return empty array if geolib throws', () => {
       geolib.findNearest.mockImplementation(() => {
         throw new Error('fail')
       })
       const result = getNearLocation(51.5, -0.1, [
         { latitude: 51.5, longitude: -0.1 }
       ])
-      expect(mockLogger.error).toHaveBeenCalled()
-      expect(result).toEqual([])
-    })
-
-    it.skip('should return empty array if result is missing lat/lon', () => {
-      geolib.findNearest.mockReturnValue({})
-      const result = getNearLocation(51.5, -0.1, [
-        { latitude: 51.5, longitude: -0.1 }
-      ])
-      expect(mockLogger.error).toHaveBeenCalled()
+      expect(global.mockLogger.error).toHaveBeenCalled()
       expect(result).toEqual([])
     })
   })
