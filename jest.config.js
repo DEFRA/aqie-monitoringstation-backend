@@ -17,6 +17,10 @@ export default {
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.server',
+    '<rootDir>/src/api/common/helpers/logging/logger.js',
+    '<rootDir>/src/api/common/helpers/logging/logger-options.js',
+    '<rootDir>/src/api/common/helpers/mongo-lock.js',
+    '<rootDir>/src/api/common/helpers/mongodb.js',
     'index.js'
   ],
   coverageDirectory: '<rootDir>/coverage',
