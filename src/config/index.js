@@ -108,15 +108,27 @@ const config = convict({
   OSPlaceApiUrl: {
     doc: 'OSPlace API url',
     format: String,
-    default: `https://aqie-location-backend.perf-test.cdp-int.defra.cloud/osnameplaces/userLocation=`,
+    default: `https://aqie-location-backend.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/osnameplaces/userLocation=`,
     env: 'OSPlace_API_URL'
   },
   measurementsApiUrl: {
     doc: 'Ricardo API url',
     format: String,
-    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
+    default: `https://aqie-back-end.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/measurements`,
     env: 'MEASUREMENTS_API_URL'
   },
+  // OSPlaceApiUrl: {
+  //   doc: 'OSPlace API url',
+  //   format: String,
+  //   default: `https://aqie-location-backend.perf-test.cdp-int.defra.cloud/osnameplaces/userLocation=`,
+  //   env: 'OSPlace_API_URL'
+  // },
+  // measurementsApiUrl: {
+  //   doc: 'Ricardo API url',
+  //   format: String,
+  //   default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
+  //   env: 'MEASUREMENTS_API_URL'
+  // },
   isSecureContextEnabled: {
     doc: 'Enable Secure Context',
     format: Boolean,
