@@ -11,10 +11,10 @@ import {
 jest.mock('mt-osgridref', () => {
   const osGridToLatLong = jest.fn().mockReturnValue({ _lat: 51.5, _lon: -0.1 })
 
-  function OsGridRef(x, y) {
-    this.x = x
-    this.y = y
-  }
+  const OsGridRef = jest.fn((x, y) => {
+    if (x === 'throw') throw new Error('mock failure')
+    return { x, y }
+  })
 
   OsGridRef.osGridToLatLong = osGridToLatLong
 
@@ -56,6 +56,31 @@ describe('location-util', () => {
         ]
       }
       const result = convertPointToLonLat(matches, 'uk-location', 0)
+      expect(result).toHaveProperty('lat')
+      expect(result).toHaveProperty('lon')
+    })
+
+    it('should convert non-UK location using x/y coordinates', () => {
+      const matches = [
+        {
+          xCoordinate: 123,
+          yCoordinate: 456
+        }
+      ]
+      const result = convertPointToLonLat(matches, 'non-uk', 0)
+      expect(result).toHaveProperty('lat')
+      expect(result).toHaveProperty('lon')
+    })
+
+    it('should log error if non-UK location throws', () => {
+      const matches = [
+        {
+          xCoordinate: 'throw',
+          yCoordinate: 456
+        }
+      ]
+      const result = convertPointToLonLat(matches, 'non-uk', 0)
+      expect(global.mockLogger.error).toHaveBeenCalled()
       expect(result).toHaveProperty('lat')
       expect(result).toHaveProperty('lon')
     })
