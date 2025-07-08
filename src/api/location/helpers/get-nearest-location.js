@@ -62,8 +62,7 @@ function getNearestLocation(
       const pollutantData = curr.pollutants[pollutant]
       const { value, startDate, endDate } = pollutantData
 
-      const isValuePositive = value > 0
-      
+      const isValuePositive = value > 0      
       const isEndDateValid = endDate === null || endDate > '2017-12-31'
       const isValueMissingWithStart = value === null && startDate !== null
       if (
