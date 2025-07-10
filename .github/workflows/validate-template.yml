@@ -19,6 +19,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
       - name: Apply template
-        run: .github/template/apply.sh DEFRA/template-backend
+        run: .github/template/apply.sh DEFRA/template
       - name: Check container starts in production-like mode
         run: .github/template/validate.sh
