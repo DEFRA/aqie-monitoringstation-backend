@@ -11,8 +11,6 @@ function convertPointToLonLat(matches, location, index) {
   let pointNI
   if (location === 'uk-location') {
     point = new OsGridRef(
-      // matches[index].GAZETTEER_ENTRY.GEOMETRY_X,
-      // matches[index].GAZETTEER_ENTRY.GEOMETRY_Y
       matches.getOSPlaces[index].GAZETTEER_ENTRY.GEOMETRY_X,
       matches.getOSPlaces[index].GAZETTEER_ENTRY.GEOMETRY_Y
     )
