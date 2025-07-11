@@ -28,8 +28,12 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Test Coverage Reports
-        run: |
+      - name: Test code and Create Test Coverage Reports
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: |
           npm ci
           npm run build
           npm test
