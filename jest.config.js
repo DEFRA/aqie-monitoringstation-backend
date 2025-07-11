@@ -21,10 +21,6 @@ export default {
     '<rootDir>/src/api/common/helpers/logging/logger-options.js',
     '<rootDir>/src/api/common/helpers/mongo-lock.js',
     '<rootDir>/src/api/common/helpers/mongodb.js',
-    '<rootDir>/src/api/example/controllers/example-find-one.js',
-    '<rootDir>/src/api/example/controllers/example-find-all.js',
-    '<rootDir>/src/api/example/controllers/example-find-one.test.js',
-    '<rootDir>/src/api/example/controllers/example-find-all.test.js',
     'index.js'
   ],
   coverageDirectory: '<rootDir>/coverage',
