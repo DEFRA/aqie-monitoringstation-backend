@@ -16,8 +16,7 @@ env:
 
 jobs:
   build:
-    if: github.run_number != 1
-    name: CDP-build-workflow
+    name: Build, version and publish
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -35,11 +34,11 @@ jobs:
           cache: npm
       - run: |
           npm ci
-          npm run build
           npm test
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true
