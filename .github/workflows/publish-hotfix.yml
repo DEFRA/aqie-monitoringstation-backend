@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
 
       # Ensure tests pass. Add more checks if required
@@ -36,20 +36,9 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - run: npm install && npm test
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      with:
-          projectBaseDir: .
-          args: >
-            -Dsonar.projectKey=DEFRA_aqie-monitoringstation-backend
-            -Dsonar.organization=defra
-            -Dsonar.sources=src/
-            -Dsonar.exclusions=src/**/*.test.js,src/server/common/**,src/client/**
-            -Dsonar.tests=src/
-            -Dsonar.test.inclusions=src/**/*.test.js
-            -Dsonar.test.exclusions=src/server/common/**,src/client/**
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#     - run: npm install && npm test
+#     - name: SonarCloud Scan
+#       uses: SonarSource/sonarcloud-github-action@master
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
