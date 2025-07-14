@@ -1,6 +1,6 @@
 # aqie-monitoringstation-backend
 
-The backend service for the monitoring station is a Node.js application designed for the AQIE data selector tool. It performs searches based on postcode and applies a filter to find locations within an approximate 50-mile radius.
+Core delivery platform Node.js Backend Template.
 
 - [Requirements](#requirements)
   - [Node.js](#nodejs)

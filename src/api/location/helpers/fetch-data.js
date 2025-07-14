@@ -49,7 +49,6 @@ async function fetchData(locationType, userLocation) {
   } else {
     logger.info(`getMeasurements data fetched:`)
   }
-
   return { getOSPlaces, getMeasurements }
 }
 export { fetchData }

@@ -9,14 +9,7 @@ import {
   distanceMeasurements
 } from '~/src/api/location/helpers/constants.js'
 
-function getNearestLocation(
-  matches,
-  measurements,
-  location,
-  miles,
-  index
-  // lang
-) {
+function getNearestLocation(matches, measurements, location, miles, index) {
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
   const measurementsCoordinates =
