@@ -18,7 +18,7 @@ describe('setupProxy', () => {
     expect(undiciDispatcher).not.toBeInstanceOf(ProxyAgent)
   })
 
-  test('Should setup proxy if the environment variable is set', () => {
+  test('Should setup proxy if the "httpProxy" environment variable is set', () => {
     config.set('httpProxy', 'http://localhost:8080')
     setupProxy()
     expect(global?.GLOBAL_AGENT?.HTTP_PROXY).toBe('http://localhost:8080')
