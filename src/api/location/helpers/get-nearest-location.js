@@ -15,7 +15,6 @@ function getNearestLocation(
   location,
   miles,
   index
-  // lang
 ) {
   const latlon =
     matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
