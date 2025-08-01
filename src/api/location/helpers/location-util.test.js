@@ -130,6 +130,18 @@ describe('location-util', () => {
   })
 
   describe('getNearLocation', () => {
+    it('should return null if measurementsCoordinates is not provided', () => {
+      const result = getNearLocation(51.5, -0.1, null)
+      expect(result).toBeNull()
+    })
+
+    it('should return null if lat or lon is not provided', () => {
+      const result = getNearLocation(null, null, [
+        { latitude: 51.5, longitude: -0.1 }
+      ])
+      expect(result).toBeNull()
+    })
+
     it('should return nearest location if valid', () => {
       geolib.findNearest.mockReturnValue({ latitude: 51.5, longitude: -0.1 })
       const result = getNearLocation(51.5, -0.1, [
@@ -138,24 +150,28 @@ describe('location-util', () => {
       expect(result).toEqual({ latitude: 51.5, longitude: -0.1 })
     })
 
-    it('should return empty array if result is missing lat/lon', () => {
+    it('should return null if getLocation is undefined or missing properties', () => {
       geolib.findNearest.mockReturnValue({})
       const result = getNearLocation(51.5, -0.1, [
         { latitude: 51.5, longitude: -0.1 }
       ])
-      expect(global.mockLogger.error).toHaveBeenCalled()
-      expect(result).toEqual([])
+      expect(global.mockLogger.error).toHaveBeenCalledWith(
+        'getLocation is undefined or missing properties'
+      )
+      expect(result).toBeNull()
     })
 
-    it('should log error and return empty array if geolib throws', () => {
+    it('should log error and return null if geolib throws an error', () => {
       geolib.findNearest.mockImplementation(() => {
         throw new Error('fail')
       })
       const result = getNearLocation(51.5, -0.1, [
         { latitude: 51.5, longitude: -0.1 }
       ])
-      expect(global.mockLogger.error).toHaveBeenCalled()
-      expect(result).toEqual([])
+      expect(global.mockLogger.error).toHaveBeenCalledWith(
+        'Failed to fetch getNearLocation: "fail"'
+      )
+      expect(result).toBeNull()
     })
   })
 })

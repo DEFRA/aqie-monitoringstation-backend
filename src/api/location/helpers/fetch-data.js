@@ -1,35 +1,25 @@
 import { config } from '~/src/config/index.js'
 import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
 import { catchFetchError } from '~/src/api/common/helpers/catch-fetch-error.js'
-// import { catchProxyFetchError } from '~/src/api/common/helpers/catch-proxy-fetch-error'
 
 async function fetchData(locationType, userLocation) {
-  // let optionsOAuth
-  // let savedAccessToken
-  // let accessToken
-
+  const logger = createLogger()
+  const data = {
+    userLocation
+  }
   const options = {
     method: 'get',
     headers: { 'Content-Type': 'text/json', preserveWhitespace: true }
   }
-  const logger = createLogger()
-
+  const optionsOSPlace = {
+    method: 'post',
+    headers: { 'Content-Type': 'application/json', preserveWhitespace: true },
+    body: JSON.stringify(data)
+  }
   const OSPlaceApiUrl = config.get('OSPlaceApiUrl')
-  // const osNamesApiUrlFull = OSPlaceApiUrl + userLocation
-  const osNamesApiUrlFull = `${OSPlaceApiUrl}${encodeURIComponent(
-    userLocation
-  )}`
-  // const symbolsArr = ['%', '$', '&', '#', '!', '¬', '`']
-  // const shouldCallApi = symbolsArr.some((symbol) =>
-  //   userLocation.includes(symbol)
-  // )
-  // logger.info(
-  //   `osPlace data requested osNamesApiUrlFull: ${osNamesApiUrlFull}`
-  // )
-  const measurementsAPIurl = config.get('measurementsApiUrl')
   const [errorOSPlace, getOSPlaces] = await catchFetchError(
-    osNamesApiUrlFull,
-    options
+    OSPlaceApiUrl,
+    optionsOSPlace
   )
   if (errorOSPlace) {
     logger.error(
@@ -38,6 +28,7 @@ async function fetchData(locationType, userLocation) {
   } else {
     logger.info(`getOSPlaces data fetched:`)
   }
+  const measurementsAPIurl = config.get('measurementsApiUrl')
   const [errorMeasurements, getMeasurements] = await catchFetchError(
     measurementsAPIurl,
     options
