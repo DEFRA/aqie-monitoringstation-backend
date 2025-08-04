@@ -67,24 +67,25 @@ function pointsInRange(point1, point2, miles) {
   return isPoint
 }
 function getNearLocation(lat, lon, measurementsCoordinates) {
-  let getLocation
   try {
     if (lat && lon && measurementsCoordinates) {
-      getLocation = geolib.findNearest(
+      const getLocation = geolib.findNearest(
         { latitude: lat.toString().trim(), longitude: lon.toString().trim() },
         measurementsCoordinates
       )
+
+      if (getLocation && getLocation.latitude && getLocation.longitude) {
+        return getLocation
+      } else {
+        logger.error('getLocation is undefined or missing properties')
+      }
     }
   } catch (error) {
     logger.error(
       `Failed to fetch getNearLocation: ${JSON.stringify(error.message)}`
     )
   }
-  if (!getLocation || !getLocation.latitude || !getLocation.longitude) {
-    logger.error('getLocation is undefined or missing properties')
-    return []
-  }
-  return getLocation
+  return null
 }
 export {
   pointsInRange,
@@ -92,3 +93,16 @@ export {
   convertPointToLonLat,
   coordinatesTotal
 }
+
+// write the test case for function getNearLocation
+// it should return null if getLocation is undefined or missing properties
+// it should return nearest location if valid
+// it should log error if geolib throws an error
+// it should return null if lat or lon is not provided
+
+// share the test case for implementing the above secenarios
+// it should return null if measurementsCoordinates is not provided
+// it should return null if lat or lon is not provided
+// it should return nearest location if valid
+// it should log error if geolib throws an error
+// it should return null if getLocation is undefined or missing properties

@@ -108,7 +108,7 @@ const config = convict({
   OSPlaceApiUrl: {
     doc: 'OSPlace API url',
     format: String,
-    default: `https://aqie-location-backend.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/osnameplaces/userLocation=`,
+    default: `https://aqie-location-backend.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/osnameplaces`,
     env: 'OSPlace_API_URL'
   },
   measurementsApiUrl: {
@@ -120,7 +120,8 @@ const config = convict({
   // OSPlaceApiUrl: {
   //   doc: 'OSPlace API url',
   //   format: String,
-  //   default: `https://aqie-location-backend.perf-test.cdp-int.defra.cloud/osnameplaces/userLocation=`,
+  //   default: `https://aqie-location-backend.perf-test.cdp-int.defra.cloud/osnameplaces`,
+  //   // default: `http://localhost:3001/osnameplaces`,
   //   env: 'OSPlace_API_URL'
   // },
   // measurementsApiUrl: {

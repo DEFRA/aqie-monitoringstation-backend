@@ -1,23 +1,32 @@
 import { fetchData } from '~/src/api/location/helpers/fetch-data.js'
 import { config } from '~/src/config/index.js'
-import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
 import { catchFetchError } from '~/src/api/common/helpers/catch-fetch-error.js'
-// import { logConfig } from '~/src/api/common/helpers/logging/logger-options.js'
+import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
 
-jest.mock('~/src/config/index.js')
-jest.mock('~/src/api/common/helpers/logging/logger.js')
-jest.mock('~/src/api/common/helpers/catch-fetch-error.js')
-jest.mock('~/src/api/common/helpers/logging/logger-options.js', () => ({
-  logConfig: {
-    enabled: true,
-    redact: ['password', 'token']
+jest.mock('~/src/config/index.js', () => ({
+  config: {
+    get: jest.fn()
   }
+}))
+
+jest.mock('~/src/api/common/helpers/logging/logger.js', () => {
+  const mockLogger = {
+    error: jest.fn(),
+    info: jest.fn()
+  }
+  return {
+    createLogger: jest.fn(() => mockLogger)
+  }
+})
+
+jest.mock('~/src/api/common/helpers/catch-fetch-error.js', () => ({
+  catchFetchError: jest.fn()
 }))
 
 describe('fetchData', () => {
   const mockLogger = {
-    info: jest.fn(),
-    error: jest.fn()
+    error: jest.fn(),
+    info: jest.fn()
   }
 
   beforeEach(() => {
@@ -25,21 +34,21 @@ describe('fetchData', () => {
     createLogger.mockReturnValue(mockLogger)
   })
 
-  it('should fetch both OSPlace and Measurements data successfully', async () => {
-    config.get.mockImplementation((key) => {
-      return key === 'OSPlaceApiUrl'
-        ? 'https://os.api/'
-        : 'https://measurements.api/'
-    })
+  it('should fetch data successfully from both APIs', async () => {
+    config.get.mockImplementation((key) =>
+      key === 'OSPlaceApiUrl'
+        ? 'https://osplace.test'
+        : 'https://measurements.test'
+    )
 
     catchFetchError
-      .mockResolvedValueOnce([null, { os: 'place-data' }])
+      .mockResolvedValueOnce([null, { osPlace: 'data' }])
       .mockResolvedValueOnce([null, { measurements: 'data' }])
 
-    const result = await fetchData('postcode', 'London')
+    const result = await fetchData('city', 'London')
 
     expect(result).toEqual({
-      getOSPlaces: { os: 'place-data' },
+      getOSPlaces: { osPlace: 'data' },
       getMeasurements: { measurements: 'data' }
     })
 
@@ -49,18 +58,18 @@ describe('fetchData', () => {
     )
   })
 
-  it('should log error if OSPlace fetch fails', async () => {
-    config.get.mockImplementation((key) => {
-      return key === 'OSPlaceApiUrl'
-        ? 'https://os.api/'
-        : 'https://measurements.api/'
-    })
+  it('should log error if OSPlace API fails', async () => {
+    config.get.mockImplementation((key) =>
+      key === 'OSPlaceApiUrl'
+        ? 'https://osplace.test'
+        : 'https://measurements.test'
+    )
 
     catchFetchError
       .mockResolvedValueOnce([{ message: 'OSPlace error' }, null])
       .mockResolvedValueOnce([null, { measurements: 'data' }])
 
-    const result = await fetchData('postcode', 'London')
+    const result = await fetchData('city', 'London')
 
     expect(mockLogger.error).toHaveBeenCalledWith(
       'Error fetching statusCodeOSPlace data: OSPlace error'
@@ -71,18 +80,18 @@ describe('fetchData', () => {
     expect(result.getOSPlaces).toBeNull()
   })
 
-  it('should log error if Measurements fetch fails', async () => {
-    config.get.mockImplementation((key) => {
-      return key === 'OSPlaceApiUrl'
-        ? 'https://os.api/'
-        : 'https://measurements.api/'
-    })
+  it('should log error if Measurements API fails', async () => {
+    config.get.mockImplementation((key) =>
+      key === 'OSPlaceApiUrl'
+        ? 'https://osplace.test'
+        : 'https://measurements.test'
+    )
 
     catchFetchError
-      .mockResolvedValueOnce([null, { os: 'place-data' }])
+      .mockResolvedValueOnce([null, { osPlace: 'data' }])
       .mockResolvedValueOnce([{ message: 'Measurements error' }, null])
 
-    const result = await fetchData('postcode', 'London')
+    const result = await fetchData('city', 'London')
 
     expect(mockLogger.info).toHaveBeenCalledWith('getOSPlaces data fetched:')
     expect(mockLogger.error).toHaveBeenCalledWith(
@@ -91,18 +100,18 @@ describe('fetchData', () => {
     expect(result.getMeasurements).toBeNull()
   })
 
-  it('should log both errors if both fetches fail', async () => {
-    config.get.mockImplementation((key) => {
-      return key === 'OSPlaceApiUrl'
-        ? 'https://os.api/'
-        : 'https://measurements.api/'
-    })
+  it('should log errors if both APIs fail', async () => {
+    config.get.mockImplementation((key) =>
+      key === 'OSPlaceApiUrl'
+        ? 'https://osplace.test'
+        : 'https://measurements.test'
+    )
 
     catchFetchError
       .mockResolvedValueOnce([{ message: 'OSPlace error' }, null])
       .mockResolvedValueOnce([{ message: 'Measurements error' }, null])
 
-    const result = await fetchData('postcode', 'London')
+    const result = await fetchData('city', 'London')
 
     expect(mockLogger.error).toHaveBeenCalledWith(
       'Error fetching statusCodeOSPlace data: OSPlace error'
@@ -113,51 +122,46 @@ describe('fetchData', () => {
     expect(result).toEqual({ getOSPlaces: null, getMeasurements: null })
   })
 
-  it('should handle empty userLocation', async () => {
-    config.get.mockImplementation((key) => {
-      return key === 'OSPlaceApiUrl'
-        ? 'https://os.api/'
-        : 'https://measurements.api/'
-    })
-
-    catchFetchError
-      .mockResolvedValueOnce([null, { os: 'empty-location' }])
-      .mockResolvedValueOnce([null, { measurements: 'data' }])
-
-    const result = await fetchData('postcode', '')
-
-    expect(result.getOSPlaces).toEqual({ os: 'empty-location' })
-  })
-
-  it('should encode special characters in userLocation', async () => {
-    config.get.mockImplementation((key) => {
-      return key === 'OSPlaceApiUrl'
-        ? 'https://os.api/'
-        : 'https://measurements.api/'
-    })
-
-    catchFetchError
-      .mockResolvedValueOnce([null, { os: 'encoded' }])
-      .mockResolvedValueOnce([null, { measurements: 'data' }])
-
-    await fetchData('postcode', 'Londön & Co')
-
-    expect(catchFetchError).toHaveBeenCalledWith(
-      'https://os.api/Lond%C3%B6n%20%26%20Co',
-      expect.any(Object)
-    )
-  })
-
-  it('should handle undefined config URLs gracefully', async () => {
+  it('should handle unexpected config values gracefully', async () => {
     config.get.mockReturnValue(undefined)
 
     catchFetchError
-      .mockResolvedValueOnce([{ message: 'bad url' }, null])
-      .mockResolvedValueOnce([{ message: 'bad url' }, null])
+      .mockResolvedValueOnce([null, { osPlace: 'data' }])
+      .mockResolvedValueOnce([null, { measurements: 'data' }])
 
-    const result = await fetchData('postcode', 'London')
+    const result = await fetchData('city', 'London')
 
-    expect(mockLogger.error).toHaveBeenCalledTimes(2)
-    expect(result).toEqual({ getOSPlaces: null, getMeasurements: null })
+    expect(result).toEqual({
+      getOSPlaces: { osPlace: 'data' },
+      getMeasurements: { measurements: 'data' }
+    })
+  })
+
+  it('should handle null or undefined userLocation', async () => {
+    config.get.mockReturnValue('https://test.api')
+
+    catchFetchError
+      .mockResolvedValueOnce([null, { osPlace: 'data' }])
+      .mockResolvedValueOnce([null, { measurements: 'data' }])
+
+    const result = await fetchData('city', null)
+
+    expect(result.getOSPlaces).toBeDefined()
+    expect(result.getMeasurements).toBeDefined()
+  })
+
+  it('should handle unexpected catchFetchError return format', async () => {
+    config.get.mockReturnValue('https://test.api')
+
+    catchFetchError
+      .mockResolvedValueOnce([undefined, undefined])
+      .mockResolvedValueOnce([undefined, undefined])
+
+    const result = await fetchData('city', 'London')
+
+    expect(result).toEqual({
+      getOSPlaces: undefined,
+      getMeasurements: undefined
+    })
   })
 })

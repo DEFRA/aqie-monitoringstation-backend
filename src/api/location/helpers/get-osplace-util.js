@@ -1,28 +1,40 @@
 import { fetchData } from '~/src/api/location/helpers/fetch-data.js'
 import { getNearestLocation } from '~/src/api/location/helpers/get-nearest-location.js'
+import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
 import {
-  milesequal,
-  requestmileslice
+  milesequal
+  // requestmileslice
 } from '~/src/api/location/helpers/constants.js'
 
 async function fetchmonitoringstation(request) {
-  if (
-    request.params.userLocation !== '' &&
-    request.params.userLocation !== null &&
-    request.params.userLocation !== "''"
-  ) {
-    // const url = config.get('OSPlaceApiUrl')
-    const locationType = 'uk-location'
-    const requestdata = request.params.userLocation //= 'DA16 1LT'//'London'
-    // const userLocation = request.params.userLocation.toUpperCase() //= 'DA16 1LT'//'LONDON'
-    const paramlocationresult = requestdata.split('&')
-    const locationNameOrPostcode = paramlocationresult[0] // 'London Apprentice'
-    const requestmiles = paramlocationresult[1]
-    let milesparamresult = requestmiles.slice(requestmileslice, 8)
-    milesparamresult = milesparamresult * milesequal // 1 miles equal to 1.609344 KM
-    const miles = milesparamresult * 1000
+  const logger = createLogger()
+  const { userLocation, usermiles } = request.payload || {}
 
-    // const querystringresult = querystring.parse(paramlocationresult)
+  // Helper function to check if a value is null, undefined, or blank
+  const isBlank = (value) => {
+    return (
+      value === null ||
+      value === undefined ||
+      (typeof value === 'string' && value.trim() === '') ||
+      (typeof value === 'object' && Object.keys(value).length === 0)
+    )
+  }
+
+  if (isBlank(userLocation) || isBlank(usermiles)) {
+    logger.info(
+      `Invalid input: userLocation or usermiles is blank : ${userLocation}, ${usermiles}`
+    )
+  } else {
+    logger.info(
+      `Valid input: userLocation and usermiles are provided : ${userLocation}, ${usermiles}`
+    )
+
+    const locationType = 'uk-location'
+    const locationNameOrPostcode = userLocation
+    let requestmiles = usermiles
+
+    requestmiles = requestmiles * milesequal // 1 miles equal to 1.609344 KM
+    const miles = requestmiles * 1000
 
     const { getOSPlaces, getMeasurements } = await fetchData(
       locationType,
@@ -30,23 +42,29 @@ async function fetchmonitoringstation(request) {
       request,
       'h'
     )
+
     if (locationType === 'uk-location') {
-      // let results  = getOSPlaces
       const selectedMatches = getOSPlaces
 
-      const { finalnearestLocationsRange, latlon } = getNearestLocation(
+      const nearestLocationResult = getNearestLocation(
         selectedMatches,
         getMeasurements?.measurements,
         locationType,
         miles,
         0
-        // 'en'
       )
-      if (latlon != null) {
+
+      if (nearestLocationResult && typeof nearestLocationResult === 'object') {
+        const { finalnearestLocationsRange, latlon } = nearestLocationResult
+        if (latlon != null) {
+          return finalnearestLocationsRange
+        }
         return finalnearestLocationsRange
       }
-      return finalnearestLocationsRange
     }
+    logger.info(
+      `No nearest locations found for userLocation: ${userLocation}, usermiles: ${usermiles}`
+    )
   }
   return 'no data found'
 }
