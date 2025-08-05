@@ -105,31 +105,31 @@ const config = convict({
     default: null,
     env: 'CDP_HTTPS_PROXY'
   },
-  // OSPlaceApiUrl: {
-  //   doc: 'OSPlace API url',
-  //   format: String,
-  //   default: `https://aqie-location-backend.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/osnameplaces`,
-  //   env: 'OSPlace_API_URL'
-  // },
-  // measurementsApiUrl: {
-  //   doc: 'Ricardo API url',
-  //   format: String,
-  //   default: `https://aqie-back-end.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/measurements`,
-  //   env: 'MEASUREMENTS_API_URL'
-  // },
   OSPlaceApiUrl: {
     doc: 'OSPlace API url',
     format: String,
-    default: `https://aqie-location-backend.dev.cdp-int.defra.cloud/osnameplaces`,
-    // default: `http://localhost:3001/osnameplaces`,
+    default: `https://aqie-location-backend.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/osnameplaces`,
     env: 'OSPlace_API_URL'
   },
   measurementsApiUrl: {
     doc: 'Ricardo API url',
     format: String,
-    default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
+    default: `https://aqie-back-end.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/measurements`,
     env: 'MEASUREMENTS_API_URL'
   },
+  // OSPlaceApiUrl: {
+  //   doc: 'OSPlace API url',
+  //   format: String,
+  //   default: `https://aqie-location-backend.dev.cdp-int.defra.cloud/osnameplaces`,
+  //   // default: `http://localhost:3001/osnameplaces`,
+  //   env: 'OSPlace_API_URL'
+  // },
+  // measurementsApiUrl: {
+  //   doc: 'Ricardo API url',
+  //   format: String,
+  //   default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
+  //   env: 'MEASUREMENTS_API_URL'
+  // },
   isSecureContextEnabled: {
     doc: 'Enable Secure Context',
     format: Boolean,
