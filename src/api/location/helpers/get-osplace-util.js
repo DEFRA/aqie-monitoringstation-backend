@@ -1,7 +1,10 @@
 import { fetchData } from '~/src/api/location/helpers/fetch-data.js'
 import { getNearestLocation } from '~/src/api/location/helpers/get-nearest-location.js'
 import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
-import { milesequal } from '~/src/api/location/helpers/constants.js'
+import {
+  milesequal,
+  locationResult
+} from '~/src/api/location/helpers/constants.js'
 
 function isBlank(value) {
   return (
@@ -20,7 +23,7 @@ function processNearestLocationResult(nearestLocationResult) {
   ) {
     return nearestLocationResult.finalnearestLocationsRange
   }
-  return nearestLocationResult?.finalnearestLocationsRange || 'no data found'
+  return nearestLocationResult?.finalnearestLocationsRange || locationResult
 }
 
 async function fetchmonitoringstation(request) {
@@ -31,7 +34,7 @@ async function fetchmonitoringstation(request) {
     logger.info(
       `Invalid input: userLocation or usermiles is blank : ${userLocation}, ${usermiles}`
     )
-    return 'no data found'
+    return locationResult
   }
 
   logger.info(
@@ -54,7 +57,7 @@ async function fetchmonitoringstation(request) {
     logger.info(
       `No nearest locations found for userLocation: ${userLocation}, usermiles: ${usermiles}`
     )
-    return 'no data found'
+    return locationResult
   }
 
   const selectedMatches = getOSPlaces
@@ -67,7 +70,7 @@ async function fetchmonitoringstation(request) {
   )
 
   const result = processNearestLocationResult(nearestLocationResult)
-  if (result === 'no data found') {
+  if (result === locationResult) {
     logger.info(
       `No nearest locations found for userLocation: ${userLocation}, usermiles: ${usermiles}`
     )
