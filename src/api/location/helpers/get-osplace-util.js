@@ -19,7 +19,8 @@ function processNearestLocationResult(nearestLocationResult) {
   if (
     nearestLocationResult &&
     typeof nearestLocationResult === 'object' &&
-    nearestLocationResult.latlon != null
+    nearestLocationResult.latlon != null &&
+    nearestLocationResult.finalnearestLocationsRange != null
   ) {
     return nearestLocationResult.finalnearestLocationsRange
   }

@@ -2,6 +2,7 @@ import { fetchmonitoringstation } from '~/src/api/location/helpers/get-osplace-u
 import * as fetchDataModule from '~/src/api/location/helpers/fetch-data.js'
 import * as getNearestLocationModule from '~/src/api/location/helpers/get-nearest-location.js'
 import * as loggerModule from '~/src/api/common/helpers/logging/logger.js'
+import { locationResult } from '~/src/api/location/helpers/constants.js'
 
 jest.mock('~/src/api/location/helpers/fetch-data.js')
 jest.mock('~/src/api/location/helpers/get-nearest-location.js')
@@ -19,7 +20,7 @@ describe('fetchmonitoringstation', () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: '', usermiles: 10 }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
     expect(mockLogger.info).toHaveBeenCalledWith(
       expect.stringContaining('Invalid input')
     )
@@ -29,40 +30,40 @@ describe('fetchmonitoringstation', () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: null, usermiles: 10 }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should return "no data found" if userLocation is empty object', async () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: {}, usermiles: 10 }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should return "no data found" if usermiles is blank string', async () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: 'London', usermiles: '' }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should return "no data found" if usermiles is null', async () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: 'London', usermiles: null }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should return "no data found" if usermiles is undefined', async () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: 'London' }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should return "no data found" if payload is missing', async () => {
     const result = await fetchmonitoringstation({})
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should return finalnearestLocationsRange if latlon is not null', async () => {
@@ -141,21 +142,21 @@ describe('fetchmonitoringstation', () => {
       payload: { userLocation: 'London', usermiles: 10 }
     })
 
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should return "no data found" if userLocation is blank', async () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: '', usermiles: 10 }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should return "no data found" if usermiles is blank', async () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: 'London', usermiles: '' }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should log and return "no data found" when processNearestLocationResult returns "no data found"', async () => {
@@ -167,7 +168,7 @@ describe('fetchmonitoringstation', () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: 'London', usermiles: 10 }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
     expect(mockLogger.info).toHaveBeenCalledWith(
       'No nearest locations found for userLocation: London, usermiles: 10'
     )
@@ -199,7 +200,7 @@ describe('fetchmonitoringstation', () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: 'London', usermiles: 10 }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should log info when no nearest locations are found', async () => {
@@ -212,7 +213,7 @@ describe('fetchmonitoringstation', () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: 'London', usermiles: 10 }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
     expect(mockLogger.info).toHaveBeenCalledWith(
       expect.stringContaining('No nearest locations found')
     )
@@ -228,7 +229,7 @@ describe('fetchmonitoringstation', () => {
     const result = await fetchmonitoringstation({
       payload: { userLocation: 'London', usermiles: 10 }
     })
-    expect(result).toBe('no data found')
+    expect(result).toBe(locationResult)
   })
 
   it('should handle cases where getNearestLocation returns empty array', async () => {
