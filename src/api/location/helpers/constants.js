@@ -6,3 +6,4 @@ export const geolibgetDistance = 0.000621371192
 export const distanceMeasurements = 40
 export const milesequal = 1.609344
 export const requestmileslice = 6
+export const locationResult = 'no data found'
