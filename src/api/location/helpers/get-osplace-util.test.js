@@ -143,4 +143,107 @@ describe('fetchmonitoringstation', () => {
 
     expect(result).toBe('no data found')
   })
+
+  it('should return "no data found" if userLocation is blank', async () => {
+    const result = await fetchmonitoringstation({
+      payload: { userLocation: '', usermiles: 10 }
+    })
+    expect(result).toBe('no data found')
+  })
+
+  it('should return "no data found" if usermiles is blank', async () => {
+    const result = await fetchmonitoringstation({
+      payload: { userLocation: 'London', usermiles: '' }
+    })
+    expect(result).toBe('no data found')
+  })
+
+  it('should log and return "no data found" when processNearestLocationResult returns "no data found"', async () => {
+    fetchDataModule.fetchData.mockResolvedValue({
+      getOSPlaces: ['place1'],
+      getMeasurements: { measurements: ['m1'] }
+    })
+    getNearestLocationModule.getNearestLocation.mockReturnValue(null)
+    const result = await fetchmonitoringstation({
+      payload: { userLocation: 'London', usermiles: 10 }
+    })
+    expect(result).toBe('no data found')
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'No nearest locations found for userLocation: London, usermiles: 10'
+    )
+  })
+
+  it('should return nearest locations when valid input is provided', async () => {
+    fetchDataModule.fetchData.mockResolvedValue({
+      getOSPlaces: ['place1'],
+      getMeasurements: { measurements: ['m1'] }
+    })
+    getNearestLocationModule.getNearestLocation.mockReturnValue({
+      finalnearestLocationsRange: ['loc1'],
+      latlon: { lat: 51.5, lon: -0.1 }
+    })
+
+    const result = await fetchmonitoringstation({
+      payload: { userLocation: 'London', usermiles: 10 }
+    })
+    expect(result).toEqual(['loc1'])
+  })
+
+  it('should handle cases where fetchData returns no OSPlaces or measurements', async () => {
+    fetchDataModule.fetchData.mockResolvedValue({
+      getOSPlaces: [],
+      getMeasurements: {}
+    })
+    getNearestLocationModule.getNearestLocation.mockReturnValue(null)
+
+    const result = await fetchmonitoringstation({
+      payload: { userLocation: 'London', usermiles: 10 }
+    })
+    expect(result).toBe('no data found')
+  })
+
+  it('should log info when no nearest locations are found', async () => {
+    fetchDataModule.fetchData.mockResolvedValue({
+      getOSPlaces: ['place1'],
+      getMeasurements: { measurements: ['m1'] }
+    })
+    getNearestLocationModule.getNearestLocation.mockReturnValue(null)
+
+    const result = await fetchmonitoringstation({
+      payload: { userLocation: 'London', usermiles: 10 }
+    })
+    expect(result).toBe('no data found')
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      expect.stringContaining('No nearest locations found')
+    )
+  })
+
+  it('should handle cases where getNearestLocation returns null', async () => {
+    fetchDataModule.fetchData.mockResolvedValue({
+      getOSPlaces: ['place1'],
+      getMeasurements: { measurements: ['m1'] }
+    })
+    getNearestLocationModule.getNearestLocation.mockReturnValue(null)
+
+    const result = await fetchmonitoringstation({
+      payload: { userLocation: 'London', usermiles: 10 }
+    })
+    expect(result).toBe('no data found')
+  })
+
+  it('should handle cases where getNearestLocation returns empty array', async () => {
+    fetchDataModule.fetchData.mockResolvedValue({
+      getOSPlaces: ['place1'],
+      getMeasurements: { measurements: ['m1'] }
+    })
+    getNearestLocationModule.getNearestLocation.mockReturnValue({
+      finalnearestLocationsRange: [],
+      latlon: { lat: 51.5, lon: -0.1 }
+    })
+
+    const result = await fetchmonitoringstation({
+      payload: { userLocation: 'London', usermiles: 10 }
+    })
+    expect(result).toEqual([])
+  })
 })
