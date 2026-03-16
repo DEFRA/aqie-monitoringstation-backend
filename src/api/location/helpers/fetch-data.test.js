@@ -1,7 +1,7 @@
-import { fetchData } from '~/src/api/location/helpers/fetch-data.js'
+import { fetchData } from './fetch-data.js'
 import { config } from '~/src/config/index.js'
-import { catchFetchError } from '~/src/api/common/helpers/catch-fetch-error.js'
 import { createLogger } from '~/src/api/common/helpers/logging/logger.js'
+import { catchFetchError } from '~/src/api/common/helpers/catch-fetch-error.js'
 
 jest.mock('~/src/config/index.js', () => ({
   config: {
@@ -9,159 +9,178 @@ jest.mock('~/src/config/index.js', () => ({
   }
 }))
 
-jest.mock('~/src/api/common/helpers/logging/logger.js', () => {
-  const mockLogger = {
-    error: jest.fn(),
-    info: jest.fn()
-  }
-  return {
-    createLogger: jest.fn(() => mockLogger)
-  }
-})
+jest.mock('~/src/api/common/helpers/logging/logger.js', () => ({
+  createLogger: jest.fn()
+}))
 
 jest.mock('~/src/api/common/helpers/catch-fetch-error.js', () => ({
   catchFetchError: jest.fn()
 }))
 
 describe('fetchData', () => {
-  const mockLogger = {
-    error: jest.fn(),
-    info: jest.fn()
-  }
+  let mockLogger
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockLogger = {
+      info: jest.fn(),
+      error: jest.fn()
+    }
     createLogger.mockReturnValue(mockLogger)
+    config.get.mockImplementation((key) => {
+      switch (key) {
+        case 'ricardoApiKey':
+          return 'test-ricardo-api-key'
+        case 'OSPlaceApiKey':
+          return 'test-osplace-api-key'
+        case 'OSPlaceApiUrl':
+          return 'https://osplace.example.com/api'
+        case 'ricardoApiUrl':
+          return 'https://ricardo.example.com/api'
+        default:
+          return undefined
+      }
+    })
   })
 
-  it('should fetch data successfully from both APIs', async () => {
-    config.get.mockImplementation((key) =>
-      key === 'OSPlaceApiUrl'
-        ? 'https://osplace.test'
-        : 'https://measurements.test'
-    )
+  test('should return getOSPlaces and getRicardodata on successful fetches', async () => {
+    const mockOSPlacesResponse = { results: [{ name: 'London' }] }
+    const mockRicardoResponse = { stations: [{ id: 1 }] }
 
     catchFetchError
-      .mockResolvedValueOnce([null, { osPlace: 'data' }])
-      .mockResolvedValueOnce([null, { measurements: 'data' }])
+      .mockResolvedValueOnce([null, mockOSPlacesResponse])
+      .mockResolvedValueOnce([null, mockRicardoResponse])
 
     const result = await fetchData('city', 'London')
 
     expect(result).toEqual({
-      getOSPlaces: { osPlace: 'data' },
-      getMeasurements: { measurements: 'data' }
+      getOSPlaces: mockOSPlacesResponse,
+      getRicardodata: mockRicardoResponse
     })
-
     expect(mockLogger.info).toHaveBeenCalledWith('getOSPlaces data fetched:')
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      'getMeasurements data fetched:'
-    )
+    expect(mockLogger.info).toHaveBeenCalledWith('getRicardodata data fetched:')
+    expect(mockLogger.error).not.toHaveBeenCalled()
   })
 
-  it('should log error if OSPlace API fails', async () => {
-    config.get.mockImplementation((key) =>
-      key === 'OSPlaceApiUrl'
-        ? 'https://osplace.test'
-        : 'https://measurements.test'
-    )
+  test('should log error when OSPlace fetch fails', async () => {
+    const osError = new Error('OSPlace network error')
+    const mockRicardoResponse = { stations: [] }
 
     catchFetchError
-      .mockResolvedValueOnce([{ message: 'OSPlace error' }, null])
-      .mockResolvedValueOnce([null, { measurements: 'data' }])
+      .mockResolvedValueOnce([osError, undefined])
+      .mockResolvedValueOnce([null, mockRicardoResponse])
 
-    const result = await fetchData('city', 'London')
+    const result = await fetchData('city', 'Manchester')
 
     expect(mockLogger.error).toHaveBeenCalledWith(
-      'Error fetching statusCodeOSPlace data: OSPlace error'
+      'Error fetching statusCodeOSPlace data: OSPlace network error'
     )
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      'getMeasurements data fetched:'
-    )
-    expect(result.getOSPlaces).toBeNull()
-  })
-
-  it('should log error if Measurements API fails', async () => {
-    config.get.mockImplementation((key) =>
-      key === 'OSPlaceApiUrl'
-        ? 'https://osplace.test'
-        : 'https://measurements.test'
-    )
-
-    catchFetchError
-      .mockResolvedValueOnce([null, { osPlace: 'data' }])
-      .mockResolvedValueOnce([{ message: 'Measurements error' }, null])
-
-    const result = await fetchData('city', 'London')
-
-    expect(mockLogger.info).toHaveBeenCalledWith('getOSPlaces data fetched:')
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      'Error fetching Measurements data: Measurements error'
-    )
-    expect(result.getMeasurements).toBeNull()
-  })
-
-  it('should log errors if both APIs fail', async () => {
-    config.get.mockImplementation((key) =>
-      key === 'OSPlaceApiUrl'
-        ? 'https://osplace.test'
-        : 'https://measurements.test'
-    )
-
-    catchFetchError
-      .mockResolvedValueOnce([{ message: 'OSPlace error' }, null])
-      .mockResolvedValueOnce([{ message: 'Measurements error' }, null])
-
-    const result = await fetchData('city', 'London')
-
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      'Error fetching statusCodeOSPlace data: OSPlace error'
-    )
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      'Error fetching Measurements data: Measurements error'
-    )
-    expect(result).toEqual({ getOSPlaces: null, getMeasurements: null })
-  })
-
-  it('should handle unexpected config values gracefully', async () => {
-    config.get.mockReturnValue(undefined)
-
-    catchFetchError
-      .mockResolvedValueOnce([null, { osPlace: 'data' }])
-      .mockResolvedValueOnce([null, { measurements: 'data' }])
-
-    const result = await fetchData('city', 'London')
-
-    expect(result).toEqual({
-      getOSPlaces: { osPlace: 'data' },
-      getMeasurements: { measurements: 'data' }
-    })
-  })
-
-  it('should handle null or undefined userLocation', async () => {
-    config.get.mockReturnValue('https://test.api')
-
-    catchFetchError
-      .mockResolvedValueOnce([null, { osPlace: 'data' }])
-      .mockResolvedValueOnce([null, { measurements: 'data' }])
-
-    const result = await fetchData('city', null)
-
-    expect(result.getOSPlaces).toBeDefined()
-    expect(result.getMeasurements).toBeDefined()
-  })
-
-  it('should handle unexpected catchFetchError return format', async () => {
-    config.get.mockReturnValue('https://test.api')
-
-    catchFetchError
-      .mockResolvedValueOnce([undefined, undefined])
-      .mockResolvedValueOnce([undefined, undefined])
-
-    const result = await fetchData('city', 'London')
-
+    expect(mockLogger.info).toHaveBeenCalledWith('getRicardodata data fetched:')
     expect(result).toEqual({
       getOSPlaces: undefined,
-      getMeasurements: undefined
+      getRicardodata: mockRicardoResponse
     })
+  })
+
+  test('should log error when Ricardo fetch fails', async () => {
+    const ricardoError = new Error('Ricardo network error')
+    const mockOSPlacesResponse = { results: [] }
+
+    catchFetchError
+      .mockResolvedValueOnce([null, mockOSPlacesResponse])
+      .mockResolvedValueOnce([ricardoError, undefined])
+
+    const result = await fetchData('postcode', 'SW1A 1AA')
+
+    expect(mockLogger.info).toHaveBeenCalledWith('getOSPlaces data fetched:')
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Error fetching Ricardo data: Ricardo network error'
+    )
+    expect(result).toEqual({
+      getOSPlaces: mockOSPlacesResponse,
+      getRicardodata: undefined
+    })
+  })
+
+  test('should log errors when both fetches fail', async () => {
+    const osError = new Error('OSPlace timeout')
+    const ricardoError = new Error('Ricardo timeout')
+
+    catchFetchError
+      .mockResolvedValueOnce([osError, undefined])
+      .mockResolvedValueOnce([ricardoError, undefined])
+
+    const result = await fetchData('region', 'Birmingham')
+
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Error fetching statusCodeOSPlace data: OSPlace timeout'
+    )
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Error fetching Ricardo data: Ricardo timeout'
+    )
+    expect(result).toEqual({
+      getOSPlaces: undefined,
+      getRicardodata: undefined
+    })
+  })
+
+  test('should call catchFetchError with correct OSPlace URL and options', async () => {
+    catchFetchError
+      .mockResolvedValueOnce([null, {}])
+      .mockResolvedValueOnce([null, {}])
+
+    await fetchData('city', 'Leeds')
+
+    expect(catchFetchError).toHaveBeenCalledWith(
+      'https://osplace.example.com/api',
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          preserveWhitespace: true
+        },
+        body: JSON.stringify({ userLocation: 'Leeds' })
+      }
+    )
+  })
+
+  test('should call catchFetchError with correct Ricardo URL and options', async () => {
+    catchFetchError
+      .mockResolvedValueOnce([null, {}])
+      .mockResolvedValueOnce([null, {}])
+
+    await fetchData('city', 'Bristol')
+
+    expect(catchFetchError).toHaveBeenCalledWith(
+      'https://ricardo.example.com/api?with-closed=true&with-pollutants=1&stream=data',
+      {
+        method: 'get',
+        headers: {
+          'Content-Type': 'text/json',
+          preserveWhitespace: true
+        }
+      }
+    )
+  })
+
+  test('should create a logger instance', async () => {
+    catchFetchError
+      .mockResolvedValueOnce([null, {}])
+      .mockResolvedValueOnce([null, {}])
+
+    await fetchData('city', 'Oxford')
+
+    expect(createLogger).toHaveBeenCalledTimes(1)
+  })
+
+  test('should read all required config values', async () => {
+    catchFetchError
+      .mockResolvedValueOnce([null, {}])
+      .mockResolvedValueOnce([null, {}])
+
+    await fetchData('city', 'Cambridge')
+
+    expect(config.get).toHaveBeenCalledWith('OSPlaceApiUrl')
+    expect(config.get).toHaveBeenCalledWith('ricardoApiUrl')
   })
 })

@@ -111,24 +111,41 @@ const config = convict({
     default: `https://aqie-location-backend.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/osnameplaces`,
     env: 'OSPlace_API_URL'
   },
-  measurementsApiUrl: {
+  ricardoApiUrl: {
     doc: 'Ricardo API url',
     format: String,
-    default: `https://aqie-back-end.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/measurements`,
-    env: 'MEASUREMENTS_API_URL'
+    default: `https://aqie-back-end.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/monitoringStationInfo`,
+    env: 'RICARDO_API_URL'
   },
   // OSPlaceApiUrl: {
   //   doc: 'OSPlace API url',
   //   format: String,
-  //   default: `https://aqie-location-backend.dev.cdp-int.defra.cloud/osnameplaces`,
+  //   // default: `https://aqie-location-backend.dev.cdp-int.defra.cloud/osnameplaces`,
+  //   default: `https://ephemeral-protected.api.dev.cdp-int.defra.cloud/aqie-location-backend/osnameplaces`,
   //   // default: `http://localhost:3001/osnameplaces`,
   //   env: 'OSPlace_API_URL'
   // },
-  // measurementsApiUrl: {
+  // OSPlaceApiKey: {
+  //   doc: 'OSPlace API key',
+  //   format: String,
+  //   default: '',
+  //   env: 'OSPLACE_API_KEY'
+  // },
+  // ricardoApiUrl: {
   //   doc: 'Ricardo API url',
   //   format: String,
-  //   default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
-  //   env: 'MEASUREMENTS_API_URL'
+  //   // default: `https://aqie-back-end.dev.cdp-int.defra.cloud/measurements`,
+  //   // default: `https://ephemeral-protected.api.dev.cdp-int.defra.cloud/aqie-back-end/monitoringStationInfo?with-closed=true&with-pollutants=1&stream=data`,
+  //   // default: `http://localhost:3001/monitoringStationInfo?with-closed=true&with-pollutants=1&stream=data`,
+  //   // default: `http://localhost:3001/monitoringStationInfo`,
+  //   default: `https://aqie-back-end.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/monitoringStationInfo`,
+  //   env: 'RICARDO_API_URL'
+  // },
+  // ricardoApiKey: {
+  //   doc: 'Ricardo API key',
+  //   format: String,
+  //   default: '',
+  //   env: 'RICARDO_API_KEY'
   // },
   isSecureContextEnabled: {
     doc: 'Enable Secure Context',

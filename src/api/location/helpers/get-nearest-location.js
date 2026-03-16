@@ -53,21 +53,27 @@ function getNearestLocation(matches, measurements, location, miles, index) {
     Object.keys(curr.pollutants).forEach((pollutant) => {
       let pollutantname = pollutant
       const pollutantData = curr.pollutants[pollutant]
-      const { value, startDate, endDate } = pollutantData
+      // const { value, startDate, endDate } = pollutantData
 
-      const isValuePositive = value > 0
+      // const isValuePositive = value > 0
+      // const isEndDateValid = endDate === null || endDate > '2017-12-31'
+      // const isValueMissingWithStart = value === null && startDate !== null
+      // if (
+      //   (isValuePositive && isEndDateValid) ||
+      //   (isValueMissingWithStart && isEndDateValid)
+      // ) {
+      const { startDate, endDate } = pollutantData
+      const isStartDateValid = startDate === null || startDate !== null
       const isEndDateValid = endDate === null || endDate > '2017-12-31'
-      const isValueMissingWithStart = value === null && startDate !== null
-      if (
-        (isValuePositive && isEndDateValid) ||
-        (isValueMissingWithStart && isEndDateValid)
-      ) {
+      if (isStartDateValid && isEndDateValid) {
         const pollutantAliases = {
           PM25: 'PM2.5',
           GR25: 'PM2.5',
+          GR25U: 'PM2.5',
           MP10: 'PM10',
           GE10: 'PM10',
           GR10: 'PM10',
+          GR10U: 'PM10',
           NO2: 'Nitrogen dioxide',
           O3: 'Ozone',
           SO2: 'Sulphur dioxide'
