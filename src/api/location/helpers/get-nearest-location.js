@@ -53,15 +53,6 @@ function getNearestLocation(matches, measurements, location, miles, index) {
     Object.keys(curr.pollutants).forEach((pollutant) => {
       let pollutantname = pollutant
       const pollutantData = curr.pollutants[pollutant]
-      // const { value, startDate, endDate } = pollutantData
-
-      // const isValuePositive = value > 0
-      // const isEndDateValid = endDate === null || endDate > '2017-12-31'
-      // const isValueMissingWithStart = value === null && startDate !== null
-      // if (
-      //   (isValuePositive && isEndDateValid) ||
-      //   (isValueMissingWithStart && isEndDateValid)
-      // ) {
       const { startDate, endDate } = pollutantData
       const isStartDateValid = startDate === null || startDate !== null
       const isEndDateValid = endDate === null || endDate > '2017-12-31'

@@ -16,25 +16,6 @@ async function fetchData(locationType, userLocation) {
     headers: { 'Content-Type': 'application/json', preserveWhitespace: true },
     body: JSON.stringify(data)
   }
-  // const optionsricardo = {
-  //   method: 'get',
-  //   headers: {
-  //     'Content-Type': 'text/json',
-  //     preserveWhitespace: true,
-  //     'x-api-key': config.get('ricardoApiKey'),
-  //     'Accept-Encoding': '*'
-  //   }
-  // }
-  // const optionsOSPlace = {
-  //   method: 'post',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     preserveWhitespace: true,
-  //     'x-api-key': config.get('OSPlaceApiKey'),
-  //     'Accept-Encoding': '*'
-  //   },
-  //   body: JSON.stringify(data)
-  // }
   const OSPlaceApiUrl = config.get('OSPlaceApiUrl')
   const [errorOSPlace, getOSPlaces] = await catchFetchError(
     OSPlaceApiUrl,
