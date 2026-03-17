@@ -5,6 +5,7 @@ import {
   milesequal,
   locationResult
 } from '~/src/api/location/helpers/constants.js'
+import { frameSiteInfoData } from '~/src/api/location/helpers/frame-siteinfo-data.js'
 
 function isBlank(value) {
   return (
@@ -47,7 +48,7 @@ async function fetchmonitoringstation(request) {
   const requestmiles = usermiles * milesequal
   const miles = requestmiles * 1000
 
-  const { getOSPlaces, getMeasurements } = await fetchData(
+  const { getOSPlaces, getRicardodata } = await fetchData(
     locationType,
     locationNameOrPostcode,
     request,
@@ -62,9 +63,11 @@ async function fetchmonitoringstation(request) {
   }
 
   const selectedMatches = getOSPlaces
+  const transformed = frameSiteInfoData(getRicardodata?.measurements)
+
   const nearestLocationResult = getNearestLocation(
     selectedMatches,
-    getMeasurements?.measurements,
+    transformed,
     locationType,
     miles,
     0

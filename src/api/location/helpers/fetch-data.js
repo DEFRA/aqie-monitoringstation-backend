@@ -7,7 +7,7 @@ async function fetchData(locationType, userLocation) {
   const data = {
     userLocation
   }
-  const options = {
+  const optionsricardo = {
     method: 'get',
     headers: { 'Content-Type': 'text/json', preserveWhitespace: true }
   }
@@ -16,6 +16,25 @@ async function fetchData(locationType, userLocation) {
     headers: { 'Content-Type': 'application/json', preserveWhitespace: true },
     body: JSON.stringify(data)
   }
+  // const optionsricardo = {
+  //   method: 'get',
+  //   headers: {
+  //     'Content-Type': 'text/json',
+  //     preserveWhitespace: true,
+  //     'x-api-key': config.get('ricardoApiKey'),
+  //     'Accept-Encoding': '*'
+  //   }
+  // }
+  // const optionsOSPlace = {
+  //   method: 'post',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //     preserveWhitespace: true,
+  //     'x-api-key': config.get('OSPlaceApiKey'),
+  //     'Accept-Encoding': '*'
+  //   },
+  //   body: JSON.stringify(data)
+  // }
   const OSPlaceApiUrl = config.get('OSPlaceApiUrl')
   const [errorOSPlace, getOSPlaces] = await catchFetchError(
     OSPlaceApiUrl,
@@ -28,18 +47,18 @@ async function fetchData(locationType, userLocation) {
   } else {
     logger.info(`getOSPlaces data fetched:`)
   }
-  const measurementsAPIurl = config.get('measurementsApiUrl')
-  const [errorMeasurements, getMeasurements] = await catchFetchError(
-    measurementsAPIurl,
-    options
+  const ricardoAPIurl = config.get('ricardoApiUrl')
+  const baseParams = '?with-closed=true&with-pollutants=1&stream=data'
+  const ricardoAPIurlFull = `${ricardoAPIurl}${baseParams}`
+  const [errorRicardo, getRicardodata] = await catchFetchError(
+    ricardoAPIurlFull,
+    optionsricardo
   )
-  if (errorMeasurements) {
-    logger.error(
-      `Error fetching Measurements data: ${errorMeasurements.message}`
-    )
+  if (errorRicardo) {
+    logger.error(`Error fetching Ricardo data: ${errorRicardo.message}`)
   } else {
-    logger.info(`getMeasurements data fetched:`)
+    logger.info(`getRicardodata data fetched:`)
   }
-  return { getOSPlaces, getMeasurements }
+  return { getOSPlaces, getRicardodata }
 }
 export { fetchData }
