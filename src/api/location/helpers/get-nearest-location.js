@@ -11,9 +11,9 @@ import {
 
 function getNearestLocation(matches, measurements, location, miles, index) {
   const latlon =
-    matches.length !== 0 ? convertPointToLonLat(matches, location, index) : {}
+    matches.length === 0 ? {} : convertPointToLonLat(matches, location, index)
   const measurementsCoordinates =
-    matches.length !== 0 ? coordinatesTotal(measurements) : []
+    matches.length === 0 ? [] : coordinatesTotal(measurements)
   const orderByDistanceMeasurements = geolib.orderByDistance(
     { latitude: latlon.lat, longitude: latlon.lon },
     measurementsCoordinates
@@ -98,7 +98,9 @@ function getNearestLocation(matches, measurements, location, miles, index) {
         })
       }
     }
-    acc.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+    acc.sort(
+      (a, b) => Number.parseFloat(a.distance) - Number.parseFloat(b.distance)
+    )
     return acc
   }, [])
 
