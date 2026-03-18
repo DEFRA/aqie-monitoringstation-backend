@@ -38,9 +38,13 @@ const POLLUTANT_RULES = [
 ]
 
 function toIsoDate(ddmmyyyy) {
-  if (!ddmmyyyy) return null
+  if (!ddmmyyyy) {
+    return null
+  }
   const [dd, mm, yyyy] = String(ddmmyyyy).split('/')
-  if (!dd || !mm || !yyyy) return null
+  if (!dd || !mm || !yyyy) {
+    return null
+  }
   return `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`
 }
 
@@ -55,7 +59,9 @@ function buildPollutants(pollutantsMetaData = {}, includeMissingCodes = []) {
   //   Object.values(pollutantsMetaData).forEach((p) => {
   Object.values(pollutantsMetaData ?? {}).forEach((p) => {
     const code = mapPollutantCode(p?.name)
-    if (!code) return
+    if (!code) {
+      return
+    }
 
     out[code] = {
       startDate: toIsoDate(p.startDate),
