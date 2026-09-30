@@ -51,6 +51,7 @@
     "mongo-locks": "^3.0.2",
     "mongodb": "^6.10.0",
     "mt-osgridref": "^0.1.0",
+    "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
     "pino": "^9.5.0",
     "pino-pretty": "^13.0.0",
