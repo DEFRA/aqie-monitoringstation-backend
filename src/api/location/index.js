@@ -1,4 +1,7 @@
-import { osplaceController } from '~/src/api/location/controllers/location.js'
+import {
+  osplaceController,
+  stationByLocationController
+} from '~/src/api/location/controllers/location.js'
 
 /**
  * @satisfies {ServerRegisterPluginObject<void>}
@@ -22,6 +25,11 @@ const osnameplaces = {
           method: 'POST',
           path: '/monitoringstation',
           ...osplaceController
+        },
+        {
+          method: 'GET',
+          path: '/monitoringstation/by-location',
+          ...stationByLocationController
         }
       ])
     }
