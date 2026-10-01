@@ -16,11 +16,6 @@ const osnameplaces = {
           path: '/osnameplaces',
           ...osplaceController
         },
-        // {
-        //   method: 'GET',
-        //   path: '/monitoringstation/location={userLocation}',
-        //   ...osplaceController
-        // }
         {
           method: 'POST',
           path: '/monitoringstation',

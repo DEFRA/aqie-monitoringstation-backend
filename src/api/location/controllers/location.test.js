@@ -5,7 +5,7 @@ import {
 import * as getOsPlaceUtil from '~/src/api/location/helpers/get-osplace-util.js'
 import { findAllStations } from '~/src/api/location/helpers/stations-repository.js'
 import { findStationByCoordinates } from '~/src/api/location/helpers/find-station-by-coordinates.js'
-import { shapeStation } from '~/src/api/location/helpers/shape-station.js'
+import { toStationSearchResult } from '~/src/api/location/helpers/to-station-search-result.js'
 import { config } from '~/src/config/index.js'
 
 jest.mock('~/src/api/common/helpers/logging/logger-options.js', () => ({
@@ -18,7 +18,7 @@ jest.mock('~/src/api/common/helpers/logging/logger-options.js', () => ({
 jest.mock('~/src/api/location/helpers/get-osplace-util.js')
 jest.mock('~/src/api/location/helpers/stations-repository.js')
 jest.mock('~/src/api/location/helpers/find-station-by-coordinates.js')
-jest.mock('~/src/api/location/helpers/shape-station.js')
+jest.mock('~/src/api/location/helpers/to-station-search-result.js')
 jest.mock('~/src/config/index.js')
 
 describe('osplaceController.handler', () => {
@@ -127,7 +127,10 @@ describe('stationByLocationController.handler', () => {
     const cachedStations = [{ name: 'Test Station' }]
     findAllStations.mockResolvedValue(cachedStations)
     findStationByCoordinates.mockReturnValue(cachedStations[0])
-    shapeStation.mockReturnValue({ id: 'TestStation', name: 'Test Station' })
+    toStationSearchResult.mockReturnValue({
+      id: 'TestStation',
+      name: 'Test Station'
+    })
 
     await stationByLocationController.handler(mockRequest, mockResponseToolkit)
 
@@ -144,7 +147,7 @@ describe('stationByLocationController.handler', () => {
     findAllStations.mockResolvedValue([{ name: 'Test Station' }])
     findStationByCoordinates.mockReturnValue({ name: 'Test Station' })
     const shaped = { id: 'TestStation', name: 'Test Station' }
-    shapeStation.mockReturnValue(shaped)
+    toStationSearchResult.mockReturnValue(shaped)
 
     await stationByLocationController.handler(mockRequest, mockResponseToolkit)
 
@@ -158,7 +161,7 @@ describe('stationByLocationController.handler', () => {
   it('returns 404 when no station matches the coordinates', async () => {
     findAllStations.mockResolvedValue([])
     findStationByCoordinates.mockReturnValue(null)
-    shapeStation.mockReturnValue(null)
+    toStationSearchResult.mockReturnValue(null)
 
     await stationByLocationController.handler(mockRequest, mockResponseToolkit)
 
@@ -171,7 +174,7 @@ describe('stationByLocationController.handler', () => {
   it('sets the standard security headers on the response', async () => {
     findAllStations.mockResolvedValue([])
     findStationByCoordinates.mockReturnValue(null)
-    shapeStation.mockReturnValue(null)
+    toStationSearchResult.mockReturnValue(null)
 
     await stationByLocationController.handler(mockRequest, mockResponseToolkit)
 

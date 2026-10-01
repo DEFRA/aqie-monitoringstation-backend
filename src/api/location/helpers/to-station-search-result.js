@@ -29,7 +29,7 @@ const CLOSED_BEFORE_DATE = '2017-12-31'
  * @param {number|null} [distance] distance in metres, or null when not applicable
  * @returns {object|null} shaped station, or null if invalid/no active pollutants
  */
-function shapeStation(curr, distance = null) {
+function toStationSearchResult(curr, distance = null) {
   if (curr?.localSiteID === undefined || curr?.localSiteID === null) {
     return null
   }
@@ -70,4 +70,4 @@ function shapeStation(curr, distance = null) {
   }
 }
 
-export { shapeStation }
+export { toStationSearchResult }

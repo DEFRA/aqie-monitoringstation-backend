@@ -1,7 +1,7 @@
 import { fetchmonitoringstation } from '~/src/api/location/helpers/get-osplace-util.js'
 import { findAllStations } from '~/src/api/location/helpers/stations-repository.js'
 import { findStationByCoordinates } from '~/src/api/location/helpers/find-station-by-coordinates.js'
-import { shapeStation } from '~/src/api/location/helpers/shape-station.js'
+import { toStationSearchResult } from '~/src/api/location/helpers/to-station-search-result.js'
 import { config } from '~/src/config/index.js'
 import { statusCodes } from '~/src/api/common/constants/status-codes.js'
 
@@ -40,7 +40,7 @@ const stationByLocationController = {
 
     const stations = await findAllStations(request.db)
     const rawStation = findStationByCoordinates(stations, lat, lng, name)
-    const station = shapeStation(rawStation)
+    const station = toStationSearchResult(rawStation)
 
     const response = station
       ? h.response({ message: 'success', station }).code(statusCodes.ok)
