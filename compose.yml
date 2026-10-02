@@ -3,7 +3,7 @@ services:
     image: localstack/localstack:3.0.2
     ports:
       - '4590:4566' # LocalStack Gateway (remapped to avoid conflicts)
-      - '4600-4629:4560-4589'
+      - '4600-4649:4510-4559'
     env_file:
       - 'compose/aws.env'
     environment:
