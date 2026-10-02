@@ -9,6 +9,7 @@ import { failAction } from '~/src/api/common/helpers/fail-action.js'
 import { secureContext } from '~/src/api/common/helpers/secure-context/index.js'
 import { pulse } from '~/src/api/common/helpers/pulse.js'
 import { requestTracing } from '~/src/api/common/helpers/request-tracing.js'
+import { ricardoStationsScheduler } from '~/src/api/location/ricardo-stations-scheduler.js'
 
 async function createServer() {
   const server = hapi.server({
@@ -54,6 +55,9 @@ async function createServer() {
     mongoDb,
     router
   ])
+
+  // Backs only the by-location lookup - /monitoringstation search still hits Ricardo live.
+  await server.register(ricardoStationsScheduler)
 
   return server
 }
