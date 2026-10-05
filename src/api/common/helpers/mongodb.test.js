@@ -30,6 +30,14 @@ describe('#mongoDb', () => {
     test('MongoDb should have expected namespace', () => {
       expect(server.db.namespace).toBe('aqie-monitoringstation-backend')
     })
+
+    test('stations collection should have name and syncedAt indexes', async () => {
+      const indexes = await server.db.collection('stations').indexes()
+      const indexKeys = indexes.map((index) => index.key)
+
+      expect(indexKeys).toContainEqual({ name: 1 })
+      expect(indexKeys).toContainEqual({ syncedAt: 1 })
+    })
   })
 
   describe('Shut down', () => {

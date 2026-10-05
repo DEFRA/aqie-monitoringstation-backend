@@ -105,11 +105,19 @@ git config --global core.autocrlf false
 
 ## API endpoints
 
-| Endpoint             | Description                    |
-| :------------------- | :----------------------------- |
-| `GET: /health`       | Health                         |
-| `GET: /example    `  | Example API (remove as needed) |
-| `GET: /example/<id>` | Example API (remove as needed) |
+| Endpoint                              | Description                                                                                                                                                                                                                                                                                |
+| :------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET: /health`                        | Health check, used by the platform to confirm the service is running.                                                                                                                                                                                                                      |
+| `GET: /osnameplaces`                  | OS Names place/postcode lookup.                                                                                                                                                                                                                                                            |
+| `POST: /monitoringstation`            | Radius search for monitoring stations near a location. Takes `{ userLocation, usermiles }` in the body and fetches live data from the Ricardo API on every call.                                                                                                                           |
+| `GET: /monitoringstation/by-location` | Looks up a single station by `lat`, `lng` and `name` query params, read from the Mongo `stations` cache (see below) rather than calling Ricardo live. Used for deep links from other services (e.g. aqie-maps-frontend, aqie-dataselector-frontend) that only have coordinates and a name. |
+
+### Ricardo stations cache
+
+`ricardo-stations-scheduler.js` fetches the full Ricardo station list on startup and on a cron
+schedule (`stationsSyncSchedule` config, default every 6 hours), saving it to the Mongo `stations`
+collection and pruning entries no longer returned by Ricardo. This cache only backs
+`/monitoringstation/by-location` - the `/monitoringstation` search above still hits Ricardo live.
 
 ## Development helpers
 

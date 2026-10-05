@@ -42,4 +42,30 @@ async function fetchData(locationType, userLocation) {
   }
   return { getOSPlaces, getRicardodata }
 }
-export { fetchData }
+
+/**
+ * Fetches raw Ricardo station data only, without the OS Places lookup.
+ * Used for coordinate-based station lookups where geocoding isn't needed.
+ */
+async function fetchRicardoData() {
+  const logger = createLogger()
+  const optionsricardo = {
+    method: 'get',
+    headers: { 'Content-Type': 'text/json', preserveWhitespace: true }
+  }
+  const ricardoAPIurl = config.get('ricardoApiUrl')
+  const baseParams = '?with-closed=true&with-pollutants=1&stream=data'
+  const ricardoAPIurlFull = `${ricardoAPIurl}${baseParams}`
+  const [errorRicardo, getRicardodata] = await catchFetchError(
+    ricardoAPIurlFull,
+    optionsricardo
+  )
+  if (errorRicardo) {
+    logger.error(`Error fetching Ricardo data: ${errorRicardo.message}`)
+  } else {
+    logger.info(`getRicardodata data fetched:`)
+  }
+  return getRicardodata
+}
+
+export { fetchData, fetchRicardoData }

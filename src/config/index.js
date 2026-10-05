@@ -117,6 +117,12 @@ const config = convict({
     default: `https://aqie-back-end.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/monitoringStationInfo`,
     env: 'RICARDO_API_URL'
   },
+  stationsSyncSchedule: {
+    doc: 'How often to refresh the cached stations collection from Ricardo (cron format), used by the by-location lookup',
+    format: String,
+    default: '0 */6 * * *',
+    env: 'STATIONS_SYNC_SCHEDULE'
+  },
   // OSPlaceApiUrl: {
   //   doc: 'OSPlace API url',
   //   format: String,
