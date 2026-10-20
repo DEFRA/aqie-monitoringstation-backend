@@ -119,6 +119,11 @@ schedule (`stationsSyncSchedule` config, default every 6 hours), saving it to th
 collection and pruning entries no longer returned by Ricardo. This cache only backs
 `/monitoringstation/by-location` - the `/monitoringstation` search above still hits Ricardo live.
 
+The `syncedAt` index carries a TTL (`stationsCacheTtlSeconds` config, default 1 week) as a backstop
+so the collection can't grow unbounded if the sync job's own pruning ever stops working. Actively
+synced stations get a fresh `syncedAt` on every run, so the TTL never fires for them in practice.
+If syncing fails for longer than the TTL the whole cache expires.
+
 Each run is guarded by a lock (`src/api/common/helpers/sync-lock.js`, key `stationsSync`) via the
 shared `server.locker` (see [MongoDB Locks](#mongodb-locks)), so overlapping runs - or multiple
 instances on a cron tick - skip the sync instead of racing each other. The underlying lock has a

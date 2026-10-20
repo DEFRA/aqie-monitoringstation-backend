@@ -123,6 +123,12 @@ const config = convict({
     default: '0 */6 * * *',
     env: 'STATIONS_SYNC_SCHEDULE'
   },
+  stationsCacheTtlSeconds: {
+    doc: 'TTL (seconds) for cached stations documents - a backstop so the collection cannot grow unbounded if the sync job stops pruning',
+    format: Number,
+    default: 604800, // 1 week
+    env: 'STATIONS_CACHE_TTL_SECONDS'
+  },
   // OSPlaceApiUrl: {
   //   doc: 'OSPlace API url',
   //   format: String,
