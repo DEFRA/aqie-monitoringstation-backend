@@ -112,12 +112,16 @@ git config --global core.autocrlf false
 | `POST: /monitoringstation`            | Radius search for monitoring stations near a location. Takes `{ userLocation, usermiles }` in the body and fetches live data from the Ricardo API on every call.                                                                                                                           |
 | `GET: /monitoringstation/by-location` | Looks up a single station by `lat`, `lng` and `name` query params, read from the Mongo `stations` cache (see below) rather than calling Ricardo live. Used for deep links from other services (e.g. aqie-maps-frontend, aqie-dataselector-frontend) that only have coordinates and a name. |
 
+Each station in these responses carries `localSiteID` (Ricardo's `localSiteId`, e.g. `MY1`) and
+`siteId` (Ricardo's `siteId`, e.g. `UKA00315`), or `siteId: null` when Ricardo has none. Use `siteId`
+for `aqie-back-end` `GET /monitoringStationHistory`, which rejects local codes.
+
 ### Ricardo stations cache
 
 `ricardo-stations-scheduler.js` fetches the full Ricardo station list on startup and on a cron
 schedule (`stationsSyncSchedule` config, default every 6 hours), saving it to the Mongo `stations`
 collection and pruning entries no longer returned by Ricardo. This cache only backs
-`/monitoringstation/by-location` - the `/monitoringstation` search above still hits Ricardo live.
+`/monitoringstation/by-location` (entries cached before `siteId` was added gain it on the next sync) - the `/monitoringstation` search above still hits Ricardo live.
 
 ## Development helpers
 

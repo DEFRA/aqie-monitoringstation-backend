@@ -179,4 +179,15 @@ describe('toStationSearchResult', () => {
     expect(result.name).toBe('Sibton')
     expect(result.updated).toBe('2026-09-22T00:00:00.000Z')
   })
+
+  it('includes siteId when present', () => {
+    const result = toStationSearchResult(baseStation({ siteId: 'UKA00315' }))
+
+    expect(result.siteId).toBe('UKA00315')
+    expect(result.localSiteID).toBe('SIB')
+  })
+
+  it('returns siteId null when missing from the station', () => {
+    expect(toStationSearchResult(baseStation()).siteId).toBeNull()
+  })
 })

@@ -58,6 +58,7 @@ function toStationSearchResult(curr, distance = null) {
     region: curr.area,
     siteType: areaType,
     localSiteID: curr.localSiteID,
+    siteId: curr.siteId ?? null,
     location: {
       type: curr.location.type,
       coordinates: [...curr.location.coordinates]

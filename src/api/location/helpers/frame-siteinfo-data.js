@@ -100,6 +100,7 @@ function frameSiteInfoData(sourceApiJson, options = {}) {
       name: site.siteName ?? null,
       area: site.governmentRegion ?? null,
       localSiteID: site.localSiteId ?? null,
+      siteId: site.siteId ?? null,
       areaType: `${site.siteType || ''} ${site.areaType || ''}`.trim() || null,
       location: {
         type: 'Point',
