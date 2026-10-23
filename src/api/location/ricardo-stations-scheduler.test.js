@@ -31,11 +31,11 @@ describe('syncStations', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockServer = { db: {} }
+    mockServer = { db: {}, locker: {} }
   })
 
   it('skips the sync when the lock is not acquired', async () => {
-    lock.mockResolvedValue(false)
+    lock.mockResolvedValue(null)
 
     await syncStations(mockServer)
 
@@ -44,7 +44,8 @@ describe('syncStations', () => {
   })
 
   it('fetches, frames, saves and prunes stale stations when the lock is acquired', async () => {
-    lock.mockResolvedValue(true)
+    const heldLock = { free: jest.fn() }
+    lock.mockResolvedValue(heldLock)
     const ricardoData = { measurements: { member: [{ siteName: 'A' }] } }
     fetchRicardoData.mockResolvedValue(ricardoData)
     const framedStations = [{ name: 'A' }]
@@ -66,11 +67,11 @@ describe('syncStations', () => {
       mockServer.db,
       expect.any(Date)
     )
-    expect(unlock).toHaveBeenCalledWith(mockServer.db, 'stationsSync')
+    expect(unlock).toHaveBeenCalledWith(heldLock)
   })
 
   it('does not prune when the batch is empty, to avoid wiping the cache on a failed fetch', async () => {
-    lock.mockResolvedValue(true)
+    lock.mockResolvedValue({ free: jest.fn() })
     fetchRicardoData.mockResolvedValue({ measurements: undefined })
     frameSiteInfoData.mockReturnValue([])
     saveStations.mockResolvedValue(undefined)
@@ -82,14 +83,15 @@ describe('syncStations', () => {
   })
 
   it('releases the lock even when the fetch fails', async () => {
-    lock.mockResolvedValue(true)
+    const heldLock = { free: jest.fn() }
+    lock.mockResolvedValue(heldLock)
     fetchRicardoData.mockRejectedValue(new Error('Ricardo unreachable'))
     unlock.mockResolvedValue(undefined)
 
     await syncStations(mockServer)
 
     expect(saveStations).not.toHaveBeenCalled()
-    expect(unlock).toHaveBeenCalledWith(mockServer.db, 'stationsSync')
+    expect(unlock).toHaveBeenCalledWith(heldLock)
   })
 })
 
@@ -100,8 +102,8 @@ describe('ricardoStationsScheduler', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockTask = { stop: jest.fn() }
-    mockServer = { db: {}, events: { on: jest.fn() } }
-    lock.mockResolvedValue(false)
+    mockServer = { db: {}, locker: {}, events: { on: jest.fn() } }
+    lock.mockResolvedValue(null)
     config.get = jest.fn().mockReturnValue('0 */6 * * *')
     schedule.mockReturnValue(mockTask)
   })
@@ -121,7 +123,7 @@ describe('ricardoStationsScheduler', () => {
 
   it('runs syncStations when the scheduled callback fires', async () => {
     ricardoStationsScheduler.plugin.register(mockServer)
-    lock.mockResolvedValue(true)
+    lock.mockResolvedValue({ free: jest.fn() })
     fetchRicardoData.mockResolvedValue({ measurements: { member: [] } })
     frameSiteInfoData.mockReturnValue([])
 
@@ -138,7 +140,7 @@ describe('ricardoStationsScheduler', () => {
   it('kicks off an initial sync without blocking registration', () => {
     ricardoStationsScheduler.plugin.register(mockServer)
 
-    expect(lock).toHaveBeenCalledWith(mockServer.db, 'stationsSync')
+    expect(lock).toHaveBeenCalledWith(mockServer.locker, 'stationsSync')
   })
 
   it('stops the cron task when the server emits stop, to avoid leaking the timer', () => {
