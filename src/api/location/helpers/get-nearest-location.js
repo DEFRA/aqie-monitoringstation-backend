@@ -83,6 +83,7 @@ function getNearestLocation(matches, measurements, location, miles, index) {
           region: curr.area,
           siteType: areaType, // curr.areaType,
           localSiteID: curr.localSiteID,
+          siteId: curr.siteId ?? null,
           location: {
             type: curr.location.type,
             coordinates: [
@@ -123,6 +124,7 @@ function getNearestLocation(matches, measurements, location, miles, index) {
         region: curr.region,
         siteType: curr.siteType, // curr.areaType,
         localSiteID: curr.localSiteID,
+        siteId: curr.siteId,
         location: {
           type: curr.location.type,
           coordinates: [

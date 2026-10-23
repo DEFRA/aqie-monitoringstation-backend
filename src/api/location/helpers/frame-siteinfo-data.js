@@ -78,6 +78,17 @@ function buildPollutants(pollutantsMetaData = {}, includeMissingCodes = []) {
   return out
 }
 
+function resolveUpdated(site, updated) {
+  if (typeof updated === 'function') {
+    return updated(site)
+  }
+  return updated ?? new Date().toISOString()
+}
+
+function buildAreaType(site) {
+  return `${site.siteType || ''} ${site.areaType || ''}`.trim() || null
+}
+
 /**
  * @param {object} sourceApiJson full source payload
  * @param {object} options
@@ -91,16 +102,14 @@ function frameSiteInfoData(sourceApiJson, options = {}) {
     : []
 
   return members.map((site) => {
-    const updated =
-      typeof options.updated === 'function'
-        ? options.updated(site)
-        : (options.updated ?? new Date().toISOString())
+    const updated = resolveUpdated(site, options.updated)
 
     return {
       name: site.siteName ?? null,
       area: site.governmentRegion ?? null,
       localSiteID: site.localSiteId ?? null,
-      areaType: `${site.siteType || ''} ${site.areaType || ''}`.trim() || null,
+      siteId: site.siteId ?? null,
+      areaType: buildAreaType(site),
       location: {
         type: 'Point',
         // kept as [latitude, longitude] to match your sample output

@@ -39,6 +39,7 @@ describe('frameSiteInfoData', () => {
             siteName: 'Test Site',
             governmentRegion: 'North East',
             localSiteId: 'TS01',
+            siteId: 'UKA00001',
             siteType: 'Urban',
             areaType: 'Background',
             latitude: '54.123',
@@ -55,6 +56,7 @@ describe('frameSiteInfoData', () => {
           name: 'Test Site',
           area: 'North East',
           localSiteID: 'TS01',
+          siteId: 'UKA00001',
           areaType: 'Urban Background',
           location: {
             type: 'Point',
@@ -76,6 +78,7 @@ describe('frameSiteInfoData', () => {
       expect(result[0].name).toBeNull()
       expect(result[0].area).toBeNull()
       expect(result[0].localSiteID).toBeNull()
+      expect(result[0].siteId).toBeNull()
       expect(result[0].areaType).toBeNull()
       expect(result[0].location.coordinates).toEqual([NaN, NaN])
     })

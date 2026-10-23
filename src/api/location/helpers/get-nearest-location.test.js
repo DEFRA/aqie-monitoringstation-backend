@@ -332,6 +332,27 @@ describe('getNearestLocation', () => {
     ])
   })
 
+  it('should return siteId, or null when the station has none', () => {
+    const measurements = [
+      makeMeasurement({ siteId: 'UKA00315' }),
+      makeMeasurement({ name: 'Other', siteId: undefined })
+    ]
+    setupMocks(measurements)
+
+    const result = getNearestLocation(
+      [{ point: 'some' }],
+      measurements,
+      {},
+      10,
+      0
+    )
+    const byName = Object.fromEntries(
+      result.finalnearestLocationsRange.map((s) => [s.name, s.siteId])
+    )
+    expect(byName['London Marylebone']).toBe('UKA00315')
+    expect(byName.Other).toBeNull()
+  })
+
   it('should exclude measurements without localSiteID', () => {
     const measurement = makeMeasurement()
     delete measurement.localSiteID
