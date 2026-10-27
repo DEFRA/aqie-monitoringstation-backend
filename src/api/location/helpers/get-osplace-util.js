@@ -48,12 +48,16 @@ async function fetchmonitoringstation(request) {
   const requestmiles = usermiles * milesequal
   const miles = requestmiles * 1000
 
-  const { getOSPlaces, getRicardodata } = await fetchData(
-    locationType,
-    locationNameOrPostcode,
-    request,
-    'h'
-  )
+  const { errorOSPlace, errorRicardo, getOSPlaces, getRicardodata } =
+    await fetchData(locationType, locationNameOrPostcode, request, 'h')
+
+  if (errorOSPlace) {
+    return errorOSPlace
+  }
+
+  if (errorRicardo) {
+    return errorRicardo
+  }
 
   if (locationType !== 'uk-location') {
     logger.info(

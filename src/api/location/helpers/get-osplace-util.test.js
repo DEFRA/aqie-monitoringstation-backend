@@ -66,6 +66,40 @@ describe('fetchmonitoringstation', () => {
     expect(result).toBe(locationResult)
   })
 
+  it('should return errorOSPlace when fetchData provides an OS Place error', async () => {
+    const errorOSPlace = new Error('OS Place service failed')
+
+    fetchDataModule.fetchData.mockResolvedValue({
+      errorOSPlace,
+      errorRicardo: null,
+      getOSPlaces: [],
+      getRicardodata: {}
+    })
+
+    const result = await fetchmonitoringstation({
+      payload: { userLocation: 'London', usermiles: 10 }
+    })
+
+    expect(result).toBe(errorOSPlace)
+  })
+
+  it('should return errorRicardo when fetchData provides a Ricardo error', async () => {
+    const errorRicardo = new Error('Ricardo service failed')
+
+    fetchDataModule.fetchData.mockResolvedValue({
+      errorOSPlace: null,
+      errorRicardo,
+      getOSPlaces: [],
+      getRicardodata: {}
+    })
+
+    const result = await fetchmonitoringstation({
+      payload: { userLocation: 'London', usermiles: 10 }
+    })
+
+    expect(result).toBe(errorRicardo)
+  })
+
   it('should return finalnearestLocationsRange if latlon is not null', async () => {
     const mockData = {
       getOSPlaces: ['place1'],

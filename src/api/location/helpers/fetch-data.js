@@ -40,7 +40,7 @@ async function fetchData(locationType, userLocation) {
   } else {
     logger.info(`getRicardodata data fetched:`)
   }
-  return { getOSPlaces, getRicardodata }
+  return { errorOSPlace, errorRicardo, getOSPlaces, getRicardodata }
 }
 
 /**

@@ -54,6 +54,8 @@ describe('fetchData', () => {
     const result = await fetchData('city', 'London')
 
     expect(result).toEqual({
+      errorOSPlace: null,
+      errorRicardo: null,
       getOSPlaces: mockOSPlacesResponse,
       getRicardodata: mockRicardoResponse
     })
@@ -77,6 +79,8 @@ describe('fetchData', () => {
     )
     expect(mockLogger.info).toHaveBeenCalledWith('getRicardodata data fetched:')
     expect(result).toEqual({
+      errorOSPlace: osError,
+      errorRicardo: null,
       getOSPlaces: undefined,
       getRicardodata: mockRicardoResponse
     })
@@ -97,6 +101,8 @@ describe('fetchData', () => {
       'Error fetching Ricardo data: Ricardo network error'
     )
     expect(result).toEqual({
+      errorOSPlace: null,
+      errorRicardo: ricardoError,
       getOSPlaces: mockOSPlacesResponse,
       getRicardodata: undefined
     })
@@ -119,6 +125,8 @@ describe('fetchData', () => {
       'Error fetching Ricardo data: Ricardo timeout'
     )
     expect(result).toEqual({
+      errorOSPlace: osError,
+      errorRicardo: ricardoError,
       getOSPlaces: undefined,
       getRicardodata: undefined
     })
