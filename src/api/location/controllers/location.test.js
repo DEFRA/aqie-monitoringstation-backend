@@ -72,9 +72,34 @@ describe('osplaceController.handler', () => {
     const error = new Error('API failure')
     getOsPlaceUtil.fetchmonitoringstation.mockRejectedValue(error)
 
-    await expect(
-      osplaceController.handler(mockRequest, mockResponseToolkit)
-    ).rejects.toThrow('API failure')
+    const result = await osplaceController.handler(
+      mockRequest,
+      mockResponseToolkit
+    )
+
+    expect(mockResponseToolkit.response).toHaveBeenCalledWith({
+      message: 'error',
+      error: 'API failure'
+    })
+    expect(mockResponseToolkit.code).toHaveBeenCalledWith(400)
+    expect(result).toBe(mockResponseToolkit)
+  })
+
+  it('should handle fetchmonitoringstation resolving with an Error object', async () => {
+    const error = new Error('OS place unavailable')
+    getOsPlaceUtil.fetchmonitoringstation.mockResolvedValue(error)
+
+    const result = await osplaceController.handler(
+      mockRequest,
+      mockResponseToolkit
+    )
+
+    expect(mockResponseToolkit.response).toHaveBeenCalledWith({
+      message: 'error',
+      error: 'OS place unavailable'
+    })
+    expect(mockResponseToolkit.code).toHaveBeenCalledWith(400)
+    expect(result).toBe(mockResponseToolkit)
   })
 
   it('should handle fetchmonitoringstation returning null', async () => {
