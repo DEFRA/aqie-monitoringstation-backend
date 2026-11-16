@@ -20,7 +20,8 @@ const LOCK_NAME = 'stationsSync'
  * @returns {Promise<void>}
  */
 async function syncStations(server) {
-  if (!(await lock(server.db, LOCK_NAME))) {
+  const heldLock = await lock(server.locker, LOCK_NAME)
+  if (!heldLock) {
     logger.info('Stations sync skipped - already running elsewhere')
     return
   }
@@ -39,7 +40,7 @@ async function syncStations(server) {
   } catch (error) {
     logger.error(`Stations sync failed: ${error.message}`)
   } finally {
-    await unlock(server.db, LOCK_NAME)
+    await unlock(heldLock)
   }
 }
 

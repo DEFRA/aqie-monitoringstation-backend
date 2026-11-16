@@ -10,3 +10,9 @@ export const statusCodes = {
   notFound: 404,
   imATeapot: 418
 }
+
+export const mongoStatusCodes = {
+  unauthorized: 13,
+  namespaceNotFound: 26,
+  indexNotFound: 27
+}

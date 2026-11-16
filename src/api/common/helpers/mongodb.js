@@ -2,6 +2,7 @@ import { MongoClient } from 'mongodb'
 import { LockManager } from 'mongo-locks'
 
 import { config } from '~/src/config/index.js'
+import { mongoStatusCodes } from '~/src/api/common/constants/status-codes.js'
 
 /**
  * @satisfies { import('@hapi/hapi').ServerRegisterPluginObject<*> }
@@ -61,7 +62,47 @@ export const mongoDb = {
 async function createIndexes(db) {
   await db.collection('mongo-locks').createIndex({ id: 1 })
   await db.collection('stations').createIndex({ name: 1 })
-  await db.collection('stations').createIndex({ syncedAt: 1 })
+  // TTL backstop so the collection can't grow unbounded if the sync job's
+  // own prune step ever stops running - syncedAt is refreshed on every sync,
+  // so actively-synced stations never hit the TTL.
+  await ensureTtlIndex(
+    db.collection('stations'),
+    'syncedAt',
+    config.get('stationsCacheTtlSeconds')
+  )
+}
+
+/**
+ * createIndex rejects an existing index whose options differ, so a syncedAt
+ * index created before the TTL was added (or with another TTL) is rebuilt.
+ * @param {import('mongodb').Collection} collection
+ * @param {string} field
+ * @param {number} expireAfterSeconds
+ * @returns {Promise<void>}
+ */
+export async function ensureTtlIndex(collection, field, expireAfterSeconds) {
+  // A collection that doesn't exist yet has no indexes
+  const indexes = await collection.indexes().catch((error) => {
+    if (error.code !== mongoStatusCodes.namespaceNotFound) {
+      throw error
+    }
+    return []
+  })
+  const existing = indexes.find((index) => {
+    const keys = Object.keys(index.key)
+    return keys.length === 1 && keys[0] === field
+  })
+
+  if (existing && existing.expireAfterSeconds !== expireAfterSeconds) {
+    await collection.dropIndex(existing.name).catch((error) => {
+      // Another instance starting at the same time may have dropped it first
+      if (error.code !== mongoStatusCodes.indexNotFound) {
+        throw error
+      }
+    })
+  }
+
+  await collection.createIndex({ [field]: 1 }, { expireAfterSeconds })
 }
 
 /**

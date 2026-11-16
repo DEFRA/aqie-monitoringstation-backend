@@ -1,41 +1,35 @@
 import { lock, unlock } from './sync-lock.js'
 
 describe('lock', () => {
-  it('claims the lock and returns true when insert succeeds', async () => {
-    const mockCollection = { insertOne: jest.fn().mockResolvedValue({}) }
-    const mockDb = { collection: jest.fn().mockReturnValue(mockCollection) }
+  it('claims the lock and returns the held lock when available', async () => {
+    const heldLock = { free: jest.fn() }
+    const mockLocker = { lock: jest.fn().mockResolvedValue(heldLock) }
 
-    const result = await lock(mockDb, 'stationsSync')
+    const result = await lock(mockLocker, 'stationsSync')
 
-    expect(mockDb.collection).toHaveBeenCalledWith('sync-locks')
-    expect(mockCollection.insertOne).toHaveBeenCalledWith(
-      expect.objectContaining({ _id: 'stationsSync' })
-    )
-    expect(result).toBe(true)
+    expect(mockLocker.lock).toHaveBeenCalledWith('stationsSync')
+    expect(result).toBe(heldLock)
   })
 
-  it('returns false when the lock is already held', async () => {
-    const mockCollection = {
-      insertOne: jest.fn().mockRejectedValue(new Error('duplicate key'))
-    }
-    const mockDb = { collection: jest.fn().mockReturnValue(mockCollection) }
+  it('returns null when the lock is already held', async () => {
+    const mockLocker = { lock: jest.fn().mockResolvedValue(null) }
 
-    const result = await lock(mockDb, 'stationsSync')
+    const result = await lock(mockLocker, 'stationsSync')
 
-    expect(result).toBe(false)
+    expect(result).toBeNull()
   })
 })
 
 describe('unlock', () => {
-  it('deletes the lock document', async () => {
-    const mockCollection = { deleteOne: jest.fn().mockResolvedValue({}) }
-    const mockDb = { collection: jest.fn().mockReturnValue(mockCollection) }
+  it('frees the held lock', async () => {
+    const heldLock = { free: jest.fn().mockResolvedValue(true) }
 
-    await unlock(mockDb, 'stationsSync')
+    await unlock(heldLock)
 
-    expect(mockDb.collection).toHaveBeenCalledWith('sync-locks')
-    expect(mockCollection.deleteOne).toHaveBeenCalledWith({
-      _id: 'stationsSync'
-    })
+    expect(heldLock.free).toHaveBeenCalled()
+  })
+
+  it('does nothing when there is no held lock to free', async () => {
+    await expect(unlock(null)).resolves.toBeUndefined()
   })
 })
